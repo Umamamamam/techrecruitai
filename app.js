@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path    = require('path');
-const fetch   = (...args) => import('node-fetch').then(({ default: f }) => f(...args));
+const fetch = require('node-fetch');
 
 const authRoutes    = require('./src/routes/auth.routes');
 const studentRoutes = require('./src/routes/student.routes');
