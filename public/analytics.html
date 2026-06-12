@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Alliance University | Create Drive – CAN ATS Portal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<link rel="icon" href="images/Alliance_University_Icon.svg">
+<style>
+:root {
+  --white: #ffffff;
+  --surface: #ffffff;
+  --surface-alt: #f8f2ee;
+  --text: #1d1d1f;
+  --text-secondary: #6b7280;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-md: 10px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --navbar-height: 56px;
+  --sidebar-width: 220px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:13px; scroll-behavior:smooth; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f8fafc;
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:#d1d5db; border-radius:99px; }
+
+/* ── NAVBAR ── */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--navbar-height);
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-logo img {
+  height: 34px;
+  width: auto;
+  cursor: pointer;
+  background: #e5e7eb;
+  border-radius: 4px;
+  min-width: 100px;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 32px; height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: white;
+  display: grid; place-items: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 12.5px;
+  transition: 0.15s;
+}
+.icon-btn:hover { background: #f8f2ee; color: #374151; }
+
+.profile {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 6px; border-radius: 8px; cursor: pointer;
+  transition: 0.15s;
+}
+.profile:hover { background: #f9fafb; }
+
+.avatar-circle {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #e5e7eb;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 600; color: #6b7280;
+  flex-shrink: 0;
+}
+
+.profile-info strong { display:block; font-size:12px; font-weight:600; line-height:1.3; }
+.profile-info span   { display:block; font-size:10.5px; color:var(--text-secondary); }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  top: var(--navbar-height); left: 0;
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--navbar-height));
+  background: white;
+  border-right: 1px solid var(--border);
+  padding: 10px 8px;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex; flex-direction: column;
+}
+
+.sidebar-menu { list-style: none; }
+.sidebar-menu li { margin-bottom: 2px; }
+
+.sidebar-menu a {
+  display: flex; align-items: center; gap: 9px;
+  text-decoration: none; color: #374151;
+  padding: 7px 10px; border-radius: 7px;
+  font-weight: 500; font-size: 12.5px;
+  transition: 0.15s; cursor: pointer;
+}
+.sidebar-menu a i {
+  width: 15px; text-align: center;
+  font-size: 12px; color: rgb(0,125,251); flex-shrink: 0;
+}
+.sidebar-menu a:hover { background: #eff6ff; color: rgb(0,125,251); }
+.sidebar-menu a.active {
+  background: rgb(0,125,251); color: white;
+  box-shadow: 0 2px 8px rgba(0,125,251,0.25);
+}
+.sidebar-menu a.active i { color: white; }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-width);
+  padding-top: var(--navbar-height);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  width: calc(100% - var(--sidebar-width));
+}
+
+.main-body { flex: 1; padding: 24px 24px 0; }
+
+/* ── PAGE HEADER ── */
+.page-header { margin-bottom: 18px; }
+.page-header h1 { font-size: 15px; font-weight: 600; margin-bottom: 3px; color: rgb(0,125,251); }
+.page-header p  { font-size: 12px; color: var(--text-secondary); }
+
+/* ── CARD ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── FORM LAYOUT ── */
+.form-wrap { max-width: 740px; }
+
+.form-section {
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--border-light);
+}
+.form-section:last-of-type { border-bottom: none; }
+
+.form-section-title {
+  font-size: 12.5px; font-weight: 600;
+  color: var(--text); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 7px;
+}
+.form-section-title i { color: rgb(0,125,251); font-size: 12px; }
+
+/* ── LOGO UPLOAD ── */
+.logo-upload {
+  display: flex; align-items: center; gap: 14px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: 0.15s;
+  background: #fafafa;
+}
+.logo-upload:hover { border-color: rgb(0,125,251); background: #eff6ff; }
+.logo-icon {
+  width: 40px; height: 40px; border-radius: 8px;
+  background: #f1f5f9; border: 1px solid var(--border);
+  display: grid; place-items: center;
+  font-size: 18px; color: var(--text-secondary); flex-shrink: 0;
+  overflow: hidden;
+}
+.logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+.logo-text h4 { font-size: 12.5px; font-weight: 600; margin-bottom: 2px; }
+.logo-text p  { font-size: 11px; color: var(--text-secondary); }
+
+/* ── FORM GRID ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid.cols1 { grid-template-columns: 1fr; }
+.span2 { grid-column: span 2; }
+
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+
+label {
+  font-size: 12px; font-weight: 500; color: var(--text);
+}
+
+input[type=text],
+input[type=number],
+input[type=email],
+input[type=date],
+textarea,
+select {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 11px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12.5px;
+  color: var(--text);
+  background: white;
+  outline: none;
+  transition: 0.15s;
+  width: 100%;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: rgb(0,125,251);
+  box-shadow: 0 0 0 3px rgba(0,125,251,0.1);
+}
+textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
+select[multiple] { min-height: 96px; }
+
+.form-hint { font-size: 11px; color: #9ca3af; }
+
+/* ── ELIGIBILITY SECTION ── */
+.eligibility-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+/* ── SUBMIT ROW ── */
+.form-actions {
+  padding: 16px 22px;
+  display: flex; justify-content: flex-end; gap: 8px;
+  border-top: 1px solid var(--border-light);
+  background: #fafafa;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; font-family: 'Poppins', sans-serif;
+  font-weight: 500; font-size: 12.5px;
+  transition: 0.15s; text-decoration: none;
+  border-radius: 7px; padding: 7px 14px; border: none;
+  white-space: nowrap;
+}
+.btn-primary { background: rgb(0,125,251); color: white; }
+.btn-primary:hover { background: rgb(1,106,211); transform: translateY(-1px); }
+.btn-secondary {
+  background: white; color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: #f9fafb; }
+
+/* ── FOOTER ── */
+.footer {
+  background: white;
+  border-top: 1px solid var(--border);
+  width: 100%;
+  margin-top: auto;
+}
+.footer-inner {
+  padding: 12px 24px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 6px;
+  color: var(--text-secondary); font-size: 11.5px;
+}
+
+/* ── TOAST ── */
+.toast-wrap {
+  position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  background: #1d1d1f; color: white;
+  border-radius: var(--radius-md); padding: 10px 14px;
+  font-size: 12.5px; display: flex; align-items: center; gap: 9px;
+  box-shadow: var(--shadow-lg); min-width: 220px;
+  animation: slideUp .25s ease;
+}
+.toast.success { background: #16a34a; }
+.toast.error   { background: #dc2626; }
+@keyframes slideUp { from{transform:translateY(8px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; width: 100%; }
+}
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .span2 { grid-column: auto; }
+  .eligibility-grid { grid-template-columns: 1fr; }
+  .main-body { padding: 14px 14px 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="navbar-logo">
+    <img class="navbar-logo-img" src="images/au_logo.png" alt="Alliance University Logo"/>
+  </div>
+  <div class="nav-actions">
+    <button class="icon-btn" title="Help">
+      <i class="fa-regular fa-circle-question"></i>
+    </button>
+    <div class="profile">
+      <div class="avatar-circle">CT</div>
+      <div class="profile-info">
+        <strong>CAN Team</strong>
+        <span>Placement Officer</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <ul class="sidebar-menu">
+    <li><a href="index.html" id="home-btn"><i class="fa-solid fa-house"></i>Home</a></li>
+    <li><a href="create-drive.html"  id="create-drive-btn"><i class="fa-solid fa-plus-circle"></i>Create Drive</a></li>
+    <li><a href="recent-drives.html" id="recent-drives-btn"><i class="fa-solid fa-briefcase"></i>Recent Drives</a></li>
+    <li><a href="candidates.html" id="candidates-btn"><i class="fa-solid fa-users"></i>Candidates</a></li>
+    <li><a href="analytics.html" class="active" id="analytics-btn"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+    <li><a href="settings.html" id="settings-btn"><i class="fa-solid fa-gear"></i>Settings</a></li>
+  </ul>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="main-body">
+
+    <div class="page-header">
+      <h1>This feature is coming soon.!</h1>
+    </div>
+
+   
+
+<script>
+/* ── Logo preview ── */
+function previewPhoto(input) {
+  if (input.files && input.files[0]) {
+    const url = URL.createObjectURL(input.files[0]);
+    const wrap = document.getElementById('logo-icon-wrap');
+    wrap.innerHTML = `<img src="${url}" alt="logo"/>`;
+    document.getElementById('logo-label').textContent = input.files[0].name;
+  }
+}
+
+
+
+/* ── Navbar logo ── */
+const navbarLogo = document.querySelector('.navbar-logo-img');
+if (navbarLogo) navbarLogo.addEventListener('click', () => { window.location.href = 'index.html'; });
+</script>
+</body>
+</html>

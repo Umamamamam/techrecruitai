@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Alliance University | Recent Drives – CAN ATS Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<link rel="icon" href="images/Alliance_University_Icon.svg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<style>
+:root {
+  --surface:#fff;
+  --text:#1d1d1f;
+  --text-secondary:#6b7280;
+  --border:#e2e8f0;
+  --border-light:#f1f5f9;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg:0 10px 30px rgba(0,0,0,.1);
+  --radius:8px; --radius-md:10px; --radius-lg:10px; --radius-xl:14px;
+  --navbar-h:56px; --sidebar-w:220px;
+  --blue:rgb(0,125,251); --blue-dark:rgb(1,106,211);
+  --blue-bg:#eff6ff; --blue-border:#dbeafe;
+  --success:#16a34a; --success-bg:#f0fdf4;
+  --warning:#d97706; --warning-bg:#fffbeb;
+  --danger:#dc2626; --danger-bg:#fef2f2;
+  --purple:#7c3aed; --purple-bg:#f5f3ff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:13px;scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:#f8fafc;color:var(--text);font-size:13px;line-height:1.5;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
+
+/* ── NAVBAR ── */
+.navbar{position:fixed;top:0;left:0;right:0;height:var(--navbar-h);background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 20px;}
+.navbar-logo img{height:34px;width:auto;cursor:pointer;background:#e5e7eb;border-radius:4px;min-width:100px;}
+.nav-actions{display:flex;align-items:center;gap:8px;}
+.icon-btn{width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:#fff;display:grid;place-items:center;color:var(--text-secondary);cursor:pointer;font-size:12.5px;transition:.15s;}
+.icon-btn:hover{background:#f8f2ee;color:#374151;}
+.profile{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:8px;cursor:pointer;transition:.15s;}
+.profile:hover{background:#f9fafb;}
+.avatar-circle{width:28px;height:28px;border-radius:50%;background:#e5e7eb;display:grid;place-items:center;font-size:11px;font-weight:600;color:#6b7280;flex-shrink:0;}
+.profile-info strong{display:block;font-size:12px;font-weight:600;line-height:1.3;}
+.profile-info span{display:block;font-size:10.5px;color:var(--text-secondary);}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;top:var(--navbar-h);left:0;width:var(--sidebar-w);height:calc(100vh - var(--navbar-h));background:#fff;border-right:1px solid var(--border);padding:10px 8px;overflow-y:auto;z-index:100;}
+.sidebar-menu{list-style:none;}
+.sidebar-menu li{margin-bottom:2px;}
+.sidebar-menu a{display:flex;align-items:center;gap:9px;text-decoration:none;color:#374151;padding:7px 10px;border-radius:7px;font-weight:500;font-size:12.5px;transition:.15s;cursor:pointer;}
+.sidebar-menu a i{width:15px;text-align:center;font-size:12px;color:var(--blue);flex-shrink:0;}
+.sidebar-menu a:hover{background:var(--blue-bg);color:var(--blue);}
+.sidebar-menu a.active{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(0,125,251,.25);}
+.sidebar-menu a.active i{color:#fff;}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar-w);padding-top:var(--navbar-h);min-height:100vh;display:flex;flex-direction:column;width:calc(100% - var(--sidebar-w));position:relative;}
+.main-body{flex:1;padding:24px;}
+
+/* ── LOADING OVERLAY ── */
+.loading-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(248,250,252,.82);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+.loading-overlay.show{display:flex;}
+.loading-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;}
+.loading-text{font-size:13px;color:var(--text-secondary);font-weight:500;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── PAGE HEADER ── */
+.page-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap;}
+.page-hdr h1{font-size:15px;font-weight:600;color:var(--blue);margin-bottom:3px;}
+.page-hdr p{font-size:12px;color:var(--text-secondary);}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow-sm);}
+.stat-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.stat-label{font-size:11.5px;color:var(--text-secondary);font-weight:500;}
+.stat-icon{width:32px;height:32px;border-radius:var(--radius);display:grid;place-items:center;font-size:13px;}
+.si-blue{background:var(--blue-bg);color:var(--blue);}
+.si-green{background:var(--success-bg);color:var(--success);}
+.si-amber{background:var(--warning-bg);color:var(--warning);}
+.si-purple{background:var(--purple-bg);color:var(--purple);}
+.stat-val{font-size:22px;font-weight:700;line-height:1;}
+.stat-note{font-size:11px;color:var(--text-secondary);margin-top:4px;}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.search-box{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:0 10px;height:32px;flex:1;min-width:180px;}
+.search-box input{border:none;background:transparent;outline:none;font-family:inherit;font-size:12.5px;color:var(--text);width:100%;}
+.search-box input::placeholder{color:#9ca3af;}
+.search-box i{color:#9ca3af;font-size:11.5px;}
+.filter-select{height:32px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:12.5px;color:var(--text);background:#fff;padding:0 10px;outline:none;}
+
+/* ── DRIVE CARDS ── */
+.drives-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+.drive-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-sm);cursor:pointer;transition:.15s;}
+.drive-card:hover{border-color:#cbd5e1;box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.dc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.dc-company{display:flex;align-items:center;gap:10px;}
+.co-logo{width:36px;height:36px;border-radius:8px;background:#f1f5f9;border:1px solid var(--border);display:grid;place-items:center;font-size:16px;flex-shrink:0;color:#374151;overflow:hidden;}
+.co-logo img{width:100%;height:100%;object-fit:contain;}
+.co-name{font-size:13.5px;font-weight:600;margin-bottom:1px;}
+.co-role{font-size:11.5px;color:var(--text-secondary);}
+.dc-meta{display:flex;flex-direction:column;gap:5px;}
+.dc-meta-row{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-secondary);}
+.dc-meta-row i{width:13px;text-align:center;font-size:11px;color:#9ca3af;}
+.dc-footer{margin-top:12px;padding-top:10px;border-top:1px solid var(--border-light);display:flex;gap:7px;align-items:center;}
+.prog-wrap{flex:1;}
+.prog-label{display:flex;justify-content:space-between;margin-bottom:4px;}
+.prog-label span{font-size:10.5px;color:var(--text-secondary);}
+.prog-label strong{font-size:10.5px;font-weight:600;color:var(--blue);}
+.prog-bar{height:4px;background:var(--border-light);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--blue);border-radius:99px;transition:.4s;}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:99px;font-size:10.5px;font-weight:600;white-space:nowrap;}
+.badge.open{background:var(--success-bg);color:var(--success);}
+.badge.review{background:var(--warning-bg);color:var(--warning);}
+.badge.closed{background:var(--danger-bg);color:var(--danger);}
+.badge.shortlisted{background:var(--purple-bg);color:var(--purple);}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:inherit;font-weight:500;font-size:12.5px;transition:.15s;text-decoration:none;border-radius:7px;padding:7px 13px;border:none;white-space:nowrap;}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary:hover{background:var(--blue-dark);}
+.btn-secondary{background:#fff;color:var(--text);border:1px solid var(--border);}
+.btn-secondary:hover{background:#f9fafb;}
+.btn-ghost{background:transparent;color:var(--text-secondary);}
+.btn-ghost:hover{background:#f1f5f9;color:var(--text);}
+.btn-success{background:var(--success-bg);color:var(--success);}
+.btn-success:hover{background:#dcfce7;}
+.btn-purple{background:var(--purple-bg);color:var(--purple);}
+.btn-purple:hover{background:#ede9fe;}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-danger:hover{background:#b91c1c;}
+
+/* ── DETAIL VIEW ── */
+.detail-panel{display:none;}
+.detail-panel.active{display:block;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-secondary);cursor:pointer;padding:5px 0;margin-bottom:16px;background:none;border:none;font-family:inherit;transition:.15s;}
+.back-btn:hover{color:var(--blue);}
+.detail-hero{background:linear-gradient(130deg,var(--blue) 0%,#1e3a8a 100%);border-radius:var(--radius-xl);padding:24px 28px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden;}
+.detail-hero::before{content:"";position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.06);}
+.dh-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.dh-company{display:flex;align-items:center;gap:12px;}
+.dh-icon{width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.15);display:grid;place-items:center;font-size:22px;overflow:hidden;}
+.dh-icon img{width:100%;height:100%;object-fit:contain;}
+.dh-name{font-size:18px;font-weight:700;line-height:1.2;}
+.dh-role{font-size:12.5px;opacity:.85;margin-top:2px;}
+.dh-badge{padding:4px 12px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);border-radius:99px;font-size:11px;font-weight:600;}
+.dh-stats{display:flex;gap:10px;flex-wrap:wrap;}
+.dh-stat{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:9px;padding:10px 14px;min-width:100px;}
+.dh-stat strong{display:block;font-size:18px;font-weight:700;line-height:1.2;}
+.dh-stat span{font-size:10.5px;opacity:.85;}
+.dh-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+.btn-white{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:#fff;}
+.btn-white:hover{background:rgba(255,255,255,.28);}
+
+/* ── INFO GRID ── */
+.info-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:16px;}
+.info-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow-sm);}
+.info-card-title{font-size:12.5px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.info-card-title i{color:var(--blue);font-size:12px;}
+.detail-field{margin-bottom:12px;}
+.detail-field label{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;display:block;margin-bottom:3px;}
+.detail-field p{font-size:12.5px;color:var(--text);}
+.criteria-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:7px;font-size:12px;font-weight:500;background:var(--border-light);color:var(--text);margin:3px 3px 0 0;}
+.criteria-pill i{font-size:11px;color:var(--blue);}
+
+/* ── SECTION HEADER ── */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.section-hdr h2{font-size:14px;font-weight:600;}
+.section-hdr-actions{display:flex;gap:7px;align-items:center;}
+
+/* ── AI BANNER ── */
+.ai-banner{background:linear-gradient(135deg,var(--blue-bg),var(--purple-bg));border:1px solid var(--blue-border);border-radius:var(--radius-lg);padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.ai-banner-icon{width:34px;height:34px;border-radius:var(--radius);background:var(--blue);color:#fff;display:grid;place-items:center;font-size:14px;flex-shrink:0;}
+.ai-banner-text h4{font-size:12.5px;font-weight:600;}
+.ai-banner-text p{font-size:11.5px;color:var(--text-secondary);margin-top:1px;}
+.ai-banner-actions{margin-left:auto;display:flex;gap:7px;}
+
+/* ── TABLE ── */
+.table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);}
+.table-toolbar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.tcount{font-size:12px;color:var(--text-secondary);margin-left:auto;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:#f8fafc;}
+th{font-size:10.5px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;padding:9px 14px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:10px 14px;font-size:12.5px;border-bottom:1px solid var(--border-light);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr{transition:.1s;}
+tbody tr:hover{background:#fafbfc;}
+.cand-name{font-size:12.5px;font-weight:600;display:block;}
+.cand-email{font-size:11px;color:var(--text-secondary);}
+.cgpa-chip{display:inline-flex;padding:2px 8px;border-radius:99px;font-size:11.5px;font-weight:600;}
+.cgpa-high{background:var(--success-bg);color:var(--success);}
+.cgpa-mid{background:var(--blue-bg);color:var(--blue);}
+.cgpa-low{background:var(--warning-bg);color:var(--warning);}
+.score-chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:700;background:var(--purple-bg);color:var(--purple);}
+.skills-list{display:flex;flex-wrap:wrap;gap:3px;}
+.skill-tag{font-size:10.5px;padding:1px 7px;border-radius:99px;background:var(--border-light);border:1px solid var(--border);color:var(--text-secondary);font-weight:500;}
+.rank-badge{width:24px;height:24px;border-radius:50%;display:inline-grid;place-items:center;font-size:11px;font-weight:700;}
+.rank-1{background:#fef3c7;color:#92400e;}
+.rank-2{background:#f1f5f9;color:#475569;}
+.rank-3{background:#fdf2f8;color:#9d174d;}
+.rank-other{background:var(--border-light);color:var(--text-secondary);}
+
+/* ── SKELETON ── */
+.skel{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--radius);}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:7px;}
+.toast{background:#1d1d1f;color:#fff;border-radius:var(--radius-md);padding:10px 14px;font-size:12.5px;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow-lg);min-width:210px;animation:slideUp .25s ease;}
+.toast.success{background:var(--success);}
+.toast.error{background:var(--danger);}
+@keyframes slideUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ══════════════════════════════════════════
+   MODAL — fixed scroll + centering
+══════════════════════════════════════════ */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.48);
+  z-index:3000;
+  display:none;
+  align-items:flex-start;
+  justify-content:center;
+  padding:24px 16px;
+  overflow-y:auto;
+}
+.modal-overlay.open{display:flex;}
+
+.modal{
+  background:#fff;
+  border-radius:var(--radius-xl);
+  box-shadow:0 24px 60px rgba(0,0,0,.2);
+  width:100%;
+  max-width:520px;
+  overflow:hidden;
+  margin:auto 0;
+  flex-shrink:0;
+  position:relative;
+}
+
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:2;}
+.modal-header h3{font-size:14px;font-weight:600;}
+.modal-body{padding:20px;overflow-y:auto;}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:#fff;z-index:2;}
+.modal-danger .modal-header{border-bottom-color:#fee2e2;}
+
+/* ── AI PROGRESS MODAL ── */
+#ai-progress-modal .modal{max-width:500px;}
+
+.ai-lottie-wrap{display:flex;justify-content:center;margin-bottom:8px;}
+#ai-lottie{width:90px;height:90px;}
+
+.ai-stage-title{text-align:center;font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.ai-stage-sub{text-align:center;font-size:11.5px;color:var(--text-secondary);margin-bottom:14px;min-height:16px;}
+
+.ai-steps{display:flex;flex-direction:column;gap:0;}
+.ai-step{display:flex;align-items:flex-start;gap:10px;padding:7px 0;position:relative;}
+.ai-step:not(:last-child)::after{content:'';position:absolute;left:13px;top:32px;bottom:0;width:1.5px;background:var(--border);}
+.ai-step.done::after{background:var(--success);}
+.ai-step.active::after{background:linear-gradient(to bottom,var(--blue),var(--border));}
+.step-dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;font-size:11px;font-weight:700;transition:.3s;border:2px solid var(--border);background:#fff;color:var(--text-secondary);}
+.ai-step.done .step-dot{background:var(--success);border-color:var(--success);color:#fff;}
+.ai-step.active .step-dot{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 0 4px rgba(0,125,251,.15);animation:pulse-dot 1.4s ease-in-out infinite;}
+.ai-step.pending .step-dot{background:#f8fafc;border-color:var(--border);color:#9ca3af;}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 4px rgba(0,125,251,.15);}50%{box-shadow:0 0 0 8px rgba(0,125,251,.06);}}
+.step-info{flex:1;padding-top:3px;}
+.step-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:1px;}
+.ai-step.pending .step-name{color:var(--text-secondary);}
+.step-detail{font-size:10.5px;color:var(--text-secondary);min-height:13px;}
+.step-model{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--blue-bg);color:var(--blue);font-weight:600;display:inline-block;margin-top:2px;}
+
+.ai-overall-progress{margin-top:14px;}
+.ai-prog-label{display:flex;justify-content:space-between;margin-bottom:5px;font-size:11.5px;}
+.ai-prog-label span{color:var(--text-secondary);}
+.ai-prog-label strong{color:var(--blue);}
+.ai-prog-track{height:6px;background:var(--border-light);border-radius:99px;overflow:hidden;}
+.ai-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),#7c3aed);transition:width .6s cubic-bezier(.4,0,.2,1);}
+
+/* ── AI RESULT MODAL ── */
+#ai-result-modal .modal{max-width:740px;}
+
+/* ── API KEY WARNING ── */
+.api-warn{
+  background:#fef2f2;border:1px solid #fecaca;
+  border-radius:var(--radius-lg);padding:12px 16px;
+  margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;
+}
+.api-warn i{color:var(--danger);font-size:14px;flex-shrink:0;margin-top:1px;}
+.api-warn-text h4{font-size:12.5px;font-weight:600;color:var(--danger);margin-bottom:3px;}
+.api-warn-text p{font-size:11.5px;color:#7f1d1d;line-height:1.6;}
+.api-warn-text code{background:#fee2e2;padding:1px 5px;border-radius:4px;font-family:monospace;font-size:11px;}
+
+/* ── RESULT MODAL INTERNALS ── */
+.result-hero{background:linear-gradient(135deg,var(--success-bg),#d1fae5);border:1px solid #a7f3d0;border-radius:var(--radius-lg);padding:18px;text-align:center;margin-bottom:14px;}
+.result-hero i{font-size:28px;color:var(--success);margin-bottom:6px;}
+.result-hero h4{font-size:14px;font-weight:700;color:var(--success);margin-bottom:3px;}
+.result-hero p{font-size:12px;color:#065f46;}
+.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.result-stat{background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);padding:10px;text-align:center;}
+.result-stat strong{display:block;font-size:18px;font-weight:700;color:var(--blue);}
+.result-stat span{font-size:10.5px;color:var(--text-secondary);}
+.shortlist-preview{max-height:280px;overflow-y:auto;}
+.shortlist-preview table{font-size:12px;}
+.shortlist-preview th{font-size:10px;padding:7px 10px;}
+.shortlist-preview td{padding:7px 10px;font-size:11.5px;}
+.medal-gold{color:#f59e0b;font-size:14px;}
+.medal-silver{color:#94a3b8;font-size:14px;}
+.medal-bronze{color:#cd7c4a;font-size:14px;}
+.fit-bar{height:4px;background:var(--border-light);border-radius:99px;overflow:hidden;margin-top:3px;width:80px;}
+.fit-fill{height:100%;border-radius:99px;}
+.fit-high{background:var(--success);}
+.fit-mid{background:var(--blue);}
+.fit-low{background:var(--warning);}
+
+/* ── FOOTER ── */
+.footer{background:#fff;border-top:1px solid var(--border);width:100%;}
+.footer-inner{padding:12px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;color:var(--text-secondary);font-size:11.5px;}
+
+/* ── MISC ── */
+.empty-state{text-align:center;padding:48px 20px;}
+.empty-state i{font-size:32px;color:#d1d5db;margin-bottom:10px;}
+.empty-state h3{font-size:13.5px;font-weight:600;margin-bottom:5px;}
+.empty-state p{font-size:12px;color:var(--text-secondary);}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){.sidebar{display:none;}.main{margin-left:0;width:100%;}}
+@media(max-width:700px){.stats-row{grid-template-columns:1fr 1fr;}.info-grid{grid-template-columns:1fr;}.drives-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="navbar-logo">
+    <img class="navbar-logo-img" src="images/au_logo.png" alt="Alliance University"/>
+  </div>
+  <div class="nav-actions">
+    <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+    <button class="icon-btn"><i class="fa-regular fa-circle-question"></i></button>
+    <div class="profile">
+      <div class="avatar-circle">CT</div>
+      <div class="profile-info">
+        <strong>CAN Team</strong>
+        <span>Placement Officer</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<aside class="sidebar">
+  <ul class="sidebar-menu">
+    <li><a href="index.html"><i class="fa-solid fa-house"></i>Home</a></li>
+    <li><a href="create-drive.html"><i class="fa-solid fa-plus-circle"></i>Create Drive</a></li>
+    <li><a href="recent-drives.html" class="active"><i class="fa-solid fa-briefcase"></i>Recent Drives</a></li>
+    <li><a href="candidates.html"><i class="fa-solid fa-users"></i>Candidates</a></li>
+    <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+    <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+  </ul>
+</aside>
+
+<main class="main">
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loading-text">Loading drives…</div>
+  </div>
+
+  <div class="main-body">
+
+    <!-- ══ LIST VIEW ══ -->
+    <div id="view-list">
+      <div class="page-hdr">
+        <div>
+          <h1>Recent Drives</h1>
+          <p>All active, upcoming and closed placement drives managed by the CAN team.</p>
+        </div>
+        <a href="create-drive.html" class="btn btn-primary">
+          <i class="fa-solid fa-plus"></i> New Drive
+        </a>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-top"><span class="stat-label">Total Drives</span><div class="stat-icon si-blue"><i class="fa-solid fa-briefcase"></i></div></div>
+          <div class="stat-val" id="s-total">—</div><div class="stat-note">All time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><span class="stat-label">Active Drives</span><div class="stat-icon si-green"><i class="fa-solid fa-circle-check"></i></div></div>
+          <div class="stat-val" id="s-active">—</div><div class="stat-note">Currently open</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><span class="stat-label">Total Roles</span><div class="stat-icon si-amber"><i class="fa-solid fa-layer-group"></i></div></div>
+          <div class="stat-val" id="s-roles">—</div><div class="stat-note">Across all drives</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><span class="stat-label">AI Shortlisted</span><div class="stat-icon si-purple"><i class="fa-solid fa-robot"></i></div></div>
+          <div class="stat-val" id="s-short">—</div><div class="stat-note">Total shortlisted</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="search-input" placeholder="Search company, location…" oninput="filterDrives()"/>
+        </div>
+        <select class="filter-select" id="status-filter" onchange="filterDrives()">
+          <option value="">All Statuses</option>
+          <option value="open">Open</option>
+          <option value="review">Review</option>
+          <option value="closed">Closed</option>
+        </select>
+        <button class="btn btn-secondary btn-sm" onclick="exportAllDrives()"><i class="fa-solid fa-download"></i> Export</button>
+        <button class="btn btn-secondary btn-sm" onclick="loadDrives()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+      </div>
+      <div class="drives-grid" id="drives-grid"></div>
+    </div>
+
+    <!-- ══ DETAIL VIEW ══ -->
+    <div id="view-detail" class="detail-panel">
+      <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back to Drives</button>
+      <div class="detail-hero" id="detail-hero"></div>
+      <div class="info-grid" id="detail-info"></div>
+      <div id="ai-banner-wrap"></div>
+      <div id="shortlisted-section"></div>
+    </div>
+
+  </div><!-- /main-body -->
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>© 2026 Alliance University – CAN Department ATS Portal</span>
+      <span>Built for Intelligent Campus Recruitment</span>
+    </div>
+  </footer>
+</main>
+
+<!-- ══════════════════════════════════════
+     AI CONFIG MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="ai-modal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <h3><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--blue);margin-right:6px;"></i>AI Shortlisting Setup</h3>
+      <button class="btn btn-ghost btn-sm" style="padding:5px;" onclick="closeModal('ai-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="ai-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('ai-modal')">Cancel</button>
+      <button class="btn btn-primary" id="ai-run-btn" onclick="startAIPipeline()">
+        <i class="fa-solid fa-robot"></i> Start AI Shortlisting
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     AI PROGRESS MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="ai-progress-modal">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <h3><i class="fa-solid fa-microchip" style="color:var(--blue);margin-right:6px;"></i>AI Shortlisting in Progress</h3>
+    </div>
+    <div class="modal-body" style="padding:16px 20px;">
+      <div class="ai-lottie-wrap"><div id="ai-lottie"></div></div>
+      <div class="ai-stage-title" id="ai-stage-title">Initializing pipeline…</div>
+      <div class="ai-stage-sub"  id="ai-stage-sub">Setting up AI models</div>
+
+      <div class="ai-steps" id="ai-steps">
+        <div class="ai-step pending" id="step-0">
+          <div class="step-dot">1</div>
+          <div class="step-info">
+            <div class="step-name">Fetching student data</div>
+            <div class="step-detail" id="step-0-detail">Waiting…</div>
+            <span class="step-model">Supabase DB</span>
+          </div>
+        </div>
+        <div class="ai-step pending" id="step-1">
+          <div class="step-dot">2</div>
+          <div class="step-info">
+            <div class="step-name">Extracting resume text</div>
+            <div class="step-detail" id="step-1-detail">Waiting…</div>
+            <span class="step-model">LlamaParse API</span>
+          </div>
+        </div>
+        <div class="ai-step pending" id="step-2">
+          <div class="step-dot">3</div>
+          <div class="step-info">
+            <div class="step-name">Semantic embedding</div>
+            <div class="step-detail" id="step-2-detail">Waiting…</div>
+            <span class="step-model">Qwen3-Embedding-8B · #1 MTEB 2026</span>
+          </div>
+        </div>
+        <div class="ai-step pending" id="step-3">
+          <div class="step-dot">4</div>
+          <div class="step-info">
+            <div class="step-name">Deep AI analysis &amp; scoring</div>
+            <div class="step-detail" id="step-3-detail">Waiting…</div>
+            <span class="step-model">DeepSeek V4 Flash · 1M context · Free</span>
+          </div>
+        </div>
+        <div class="ai-step pending" id="step-4">
+          <div class="step-dot">5</div>
+          <div class="step-info">
+            <div class="step-name">Precision reranking</div>
+            <div class="step-detail" id="step-4-detail">Waiting…</div>
+            <span class="step-model">Cohere Rerank 4 Pro · ELO 1627</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-overall-progress">
+        <div class="ai-prog-label">
+          <span>Overall progress</span>
+          <strong id="ai-prog-pct">0%</strong>
+        </div>
+        <div class="ai-prog-track">
+          <div class="ai-prog-fill" id="ai-prog-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     AI RESULTS MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="ai-result-modal">
+  <div class="modal" style="max-width:740px;">
+    <div class="modal-header">
+      <h3><i class="fa-solid fa-trophy" style="color:#f59e0b;margin-right:6px;"></i>AI Shortlisting Complete</h3>
+      <button class="btn btn-ghost btn-sm" style="padding:5px;" onclick="closeModal('ai-result-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="ai-result-body" style="max-height:65vh;overflow-y:auto;padding:20px;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('ai-result-modal')">Close</button>
+      <button class="btn btn-success" id="export-result-btn"><i class="fa-solid fa-file-excel"></i> Export CSV</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     DELETE CONFIRM MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="del-modal">
+  <div class="modal modal-danger" style="max-width:420px;">
+    <div class="modal-header">
+      <h3><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger);margin-right:6px;"></i>Delete Drive</h3>
+      <button class="btn btn-ghost btn-sm" style="padding:5px;" onclick="closeModal('del-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="del-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('del-modal')">Cancel</button>
+      <button class="btn btn-danger" id="del-confirm-btn"><i class="fa-solid fa-trash"></i> Delete Drive</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+// ════════════════════════════════════════════════════
+//  CONFIG  — NO API keys here; all calls go through
+//  the Express backend at /api/proxy/*
+// ════════════════════════════════════════════════════
+const CONFIG = {
+  SUPABASE_URL:    "https://zaqfpoobhvvyndtazyxw.supabase.co",
+  SUPABASE_ANON:   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphcWZwb29iaHZ2eW5kdGF6eXh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzUwMzUsImV4cCI6MjA5MzkxMTAzNX0.nfGqIZpcp_Vl3t0rJX84qB4QhiIyhC-q9GfAcboV2hI",
+  // Proxy base — same origin, so no CORS issues
+  PROXY_BASE:      "/api/proxy",
+};
+
+// Populated at runtime by /api/proxy/config
+let _keysAvailable = { openrouter: false, llamaparse: false };
+
+function keysConfigured() {
+  return _keysAvailable.openrouter && _keysAvailable.llamaparse;
+}
+
+/* ════════════════════════════════════════════════════
+   SUPABASE
+════════════════════════════════════════════════════ */
+const { createClient } = supabase;
+const db = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON);
+
+/* ════════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════════ */
+let drives            = [];
+let driveRoles        = {};
+let currentDriveId    = null;
+let lastShortlistResult = [];
+let lastDriveForExport  = null;
+let lottieAnim        = null;
+
+/* ════════════════════════════════════════════════════
+   LOTTIE  — with graceful fallback
+════════════════════════════════════════════════════ */
+function initLottie() {
+  if (lottieAnim) { try { lottieAnim.destroy(); } catch(e){} lottieAnim = null; }
+  const container = document.getElementById('ai-lottie');
+  if (!container) return;
+  container.innerHTML = '';
+
+  try {
+    lottieAnim = lottie.loadAnimation({
+      container,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: 'https://assets-v2.lottiefiles.com/a/dad65b8a-118a-11ee-8f92-9b1c08a14017/HeKAmqLWH4.json',
+    });
+    lottieAnim.addEventListener('data_failed', () => showFallbackSpinner(container));
+    lottieAnim.addEventListener('error',       () => showFallbackSpinner(container));
+  } catch(e) {
+    showFallbackSpinner(container);
+  }
+}
+
+function showFallbackSpinner(container) {
+  container.innerHTML = `
+    <div style="width:90px;height:90px;display:flex;align-items:center;justify-content:center;">
+      <div style="width:48px;height:48px;border:4px solid var(--blue-bg);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;"></div>
+    </div>`;
+}
+
+/* ════════════════════════════════════════════════════
+   LOADING OVERLAY
+════════════════════════════════════════════════════ */
+function showLoading(msg) {
+  document.getElementById('loading-text').textContent = msg || 'Loading…';
+  document.getElementById('loading-overlay').classList.add('show');
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('show');
+}
+
+/* ════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', async () => {
+  // Ask backend which keys are configured (never exposes the keys themselves)
+  try {
+    const r = await fetch(`${CONFIG.PROXY_BASE}/config`);
+    if (r.ok) _keysAvailable = await r.json();
+  } catch(e) {
+    console.warn('Could not reach /api/proxy/config — assuming demo mode');
+  }
+
+  loadDrives();
+
+  /* Click-outside-to-close for closeable modals */
+  ['ai-modal', 'ai-result-modal', 'del-modal'].forEach(id => {
+    document.getElementById(id).addEventListener('click', e => {
+      if (e.target.id === id) closeModal(id);
+    });
+  });
+
+  const navLogo = document.querySelector('.navbar-logo-img');
+  if (navLogo) navLogo.addEventListener('click', () => { window.location.href = 'index.html'; });
+});
+
+/* ════════════════════════════════════════════════════
+   LOAD DRIVES
+════════════════════════════════════════════════════ */
+async function loadDrives() {
+  showLoading('Loading drives…');
+  try {
+    const { data: driveRows, error: driveErr } = await db
+      .from('drives')
+      .select('id,company_name,location,logo_url,status,created_at')
+      .order('created_at', { ascending: false });
+    if (driveErr) throw driveErr;
+
+    drives = (driveRows || []).map(normalise);
+
+    const { data: roleRows, error: roleErr } = await db.from('drive_roles').select('*');
+    if (roleErr) throw roleErr;
+
+    driveRoles = {};
+    (roleRows || []).forEach(r => {
+      if (!driveRoles[r.drive_id]) driveRoles[r.drive_id] = [];
+      driveRoles[r.drive_id].push(r);
+    });
+
+    renderStats();
+    renderDriveCards();
+  } catch (err) {
+    console.error('loadDrives:', err);
+    showToast('Failed to load drives: ' + err.message, 'error');
+    document.getElementById('drives-grid').innerHTML =
+      `<div style="grid-column:1/-1;">${emptyState('Could not load drives. Check your connection and try Refresh.')}</div>`;
+  } finally {
+    hideLoading();
+  }
+}
+
+function normalise(d) {
+  return {
+    id:           d.id,
+    company_name: d.company_name || 'Unknown Company',
+    location:     d.location     || '—',
+    logo_url:     d.logo_url     || null,
+    status:       d.status       || 'open',
+    created_at:   d.created_at   || null,
+  };
+}
+
+/* ════════════════════════════════════════════════════
+   STATS
+════════════════════════════════════════════════════ */
+function renderStats() {
+  const totalRoles  = Object.values(driveRoles).reduce((a, r) => a + r.length, 0);
+  const shortlisted = Object.values(driveRoles).reduce(
+    (a, rs) => a + rs.reduce((b, r) => b + (r.shortlist_count || 0), 0), 0
+  );
+  document.getElementById('s-total').textContent  = drives.length;
+  document.getElementById('s-active').textContent = drives.filter(d => d.status === 'open').length;
+  document.getElementById('s-roles').textContent  = totalRoles;
+  document.getElementById('s-short').textContent  = shortlisted.toLocaleString();
+}
+
+/* ════════════════════════════════════════════════════
+   DRIVE CARDS
+════════════════════════════════════════════════════ */
+function filterDrives() {
+  const q  = document.getElementById('search-input').value.toLowerCase();
+  const st = document.getElementById('status-filter').value;
+  const filtered = drives.filter(d => {
+    const text = (d.company_name + ' ' + d.location).toLowerCase();
+    return (!q || text.includes(q)) && (!st || d.status === st);
+  });
+  renderDriveCards(filtered);
+}
+
+function renderDriveCards(list) {
+  const g = document.getElementById('drives-grid');
+  const items = list !== undefined ? list : drives;
+  if (!items.length) {
+    g.innerHTML = `<div style="grid-column:1/-1;">${emptyState('No drives found. Try a different search or create a new drive.')}</div>`;
+    return;
+  }
+  g.innerHTML = items.map(d => {
+    const roles     = driveRoles[d.id] || [];
+    const roleLabel = roles.length === 0
+      ? 'No roles'
+      : roles.length === 1
+        ? roles[0].position
+        : `${roles[0].position} +${roles.length - 1} more`;
+    return `
+      <div class="drive-card" onclick="openDrive('${d.id}')">
+        <div class="dc-top">
+          <div class="dc-company">
+            <div class="co-logo">
+              ${d.logo_url
+                ? `<img src="${d.logo_url}" alt="${esc(d.company_name)}" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-building\\'></i>'"/>`
+                : `<i class="fa-solid fa-building"></i>`}
+            </div>
+            <div>
+              <div class="co-name">${esc(d.company_name)}</div>
+              <div class="co-role">${esc(roleLabel)}</div>
+            </div>
+          </div>
+          <span class="badge ${d.status}">${cap(d.status)}</span>
+        </div>
+        <div class="dc-meta">
+          <div class="dc-meta-row"><i class="fa-solid fa-location-dot"></i>${esc(d.location)}</div>
+          <div class="dc-meta-row"><i class="fa-solid fa-layer-group"></i>${roles.length} role${roles.length !== 1 ? 's' : ''}</div>
+          <div class="dc-meta-row"><i class="fa-solid fa-calendar"></i>${fmtDate(d.created_at)}</div>
+        </div>
+        <div class="dc-footer">
+          <div class="prog-wrap">
+            <div class="prog-label"><span>Roles configured</span><strong>${roles.length}</strong></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:${Math.min(roles.length * 20, 100)}%"></div></div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════════
+   OPEN DRIVE DETAIL
+════════════════════════════════════════════════════ */
+function openDrive(id) {
+  showLoading('Loading drive details…');
+  currentDriveId = id;
+  setTimeout(() => {
+    const d = drives.find(x => x.id == id);
+    if (!d) { hideLoading(); showToast('Drive not found.', 'error'); return; }
+    document.getElementById('view-list').style.display = 'none';
+    document.getElementById('view-detail').classList.add('active');
+    renderDetailHero(d);
+    renderDetailInfo(d);
+    renderAIBanner(d);
+    renderShortlistedSection(d);
+    hideLoading();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 300);
+}
+
+function goBack() {
+  currentDriveId = null;
+  document.getElementById('view-detail').classList.remove('active');
+  document.getElementById('view-list').style.display = '';
+  renderStats();
+  renderDriveCards();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ════════════════════════════════════════════════════
+   DETAIL: HERO
+════════════════════════════════════════════════════ */
+function renderDetailHero(d) {
+  const roles = driveRoles[d.id] || [];
+  document.getElementById('detail-hero').innerHTML = `
+    <div class="dh-top">
+      <div class="dh-company">
+        <div class="dh-icon">
+          ${d.logo_url
+            ? `<img src="${d.logo_url}" alt="${esc(d.company_name)}" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-building\\'></i>'"/>`
+            : `<i class="fa-solid fa-building"></i>`}
+        </div>
+        <div>
+          <div class="dh-name">${esc(d.company_name)}</div>
+          <div class="dh-role">${esc(d.location)}</div>
+        </div>
+      </div>
+      <span class="dh-badge">${cap(d.status)}</span>
+    </div>
+    <div class="dh-stats">
+      <div class="dh-stat"><strong>${roles.length}</strong><span>Roles</span></div>
+      <div class="dh-stat"><strong>${roles.reduce((a, r) => a + (r.shortlist_count || 0), 0)}</strong><span>Target Shortlist</span></div>
+      <div class="dh-stat"><strong>${fmtDate(d.created_at)}</strong><span>Created</span></div>
+    </div>
+    <div class="dh-actions">
+      <button class="btn btn-white btn-sm" onclick="openAIModal('${d.id}')"><i class="fa-solid fa-robot"></i> Run AI Shortlist</button>
+      <button class="btn btn-white btn-sm" onclick="exportDriveRoles('${d.id}')"><i class="fa-solid fa-file-excel"></i> Export Roles</button>
+      <button class="btn btn-white btn-sm" onclick="confirmDelete('${d.id}')" style="border-color:rgba(255,100,100,.4);"><i class="fa-solid fa-trash"></i> Delete</button>
+    </div>`;
+}
+
+/* ════════════════════════════════════════════════════
+   DETAIL: INFO CARDS
+════════════════════════════════════════════════════ */
+function renderDetailInfo(d) {
+  const roles = driveRoles[d.id] || [];
+  const roleCards = roles.map((r, i) => `
+    <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:10px;background:#fafcff;">
+      <div style="font-size:13px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+        <span style="width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:inline-grid;place-items:center;font-size:10px;font-weight:700;">${i + 1}</span>
+        ${esc(r.position)}
+        ${r.ctc ? `<span style="margin-left:auto;font-size:11px;font-weight:500;color:var(--success);background:var(--success-bg);padding:2px 8px;border-radius:99px;">${esc(r.ctc)}</span>` : ''}
+      </div>
+      ${r.description ? `<p style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;line-height:1.6;">${esc(r.description)}</p>` : ''}
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        ${r.cgpa_min       ? `<span class="criteria-pill"><i class="fa-solid fa-graduation-cap"></i>Min CGPA ${r.cgpa_min}</span>` : ''}
+        ${r.percentage_min ? `<span class="criteria-pill"><i class="fa-solid fa-percent"></i>Min ${r.percentage_min}%</span>` : ''}
+        ${(r.backlogs_max !== null && r.backlogs_max < 99) ? `<span class="criteria-pill"><i class="fa-solid fa-triangle-exclamation"></i>Max ${r.backlogs_max} backlogs</span>` : ''}
+        ${r.shortlist_count ? `<span class="criteria-pill"><i class="fa-solid fa-users"></i>Shortlist ${r.shortlist_count}</span>` : ''}
+        ${(r.departments || []).map(dep => `<span class="criteria-pill">${esc(dep)}</span>`).join('')}
+      </div>
+    </div>`).join('');
+
+  document.getElementById('detail-info').innerHTML = `
+    <div class="info-card">
+      <div class="info-card-title"><i class="fa-solid fa-layer-group"></i>Roles (${roles.length})</div>
+      ${roles.length ? roleCards : '<p style="font-size:12px;color:var(--text-secondary);">No roles added yet.</p>'}
+    </div>
+    <div class="info-card">
+      <div class="info-card-title"><i class="fa-solid fa-circle-info"></i>Drive Details</div>
+      <div class="detail-field"><label>Company</label><p>${esc(d.company_name)}</p></div>
+      <div class="detail-field"><label>Location</label><p>${esc(d.location)}</p></div>
+      <div class="detail-field"><label>Status</label><span class="badge ${d.status}">${cap(d.status)}</span></div>
+      <div class="detail-field"><label>Created</label><p>${fmtDateFull(d.created_at)}</p></div>
+      <div style="margin-top:12px;">
+        <label style="font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#9ca3af;display:block;margin-bottom:6px;">Change Status</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-sm btn-secondary" onclick="changeStatus('${d.id}','open')">Open</button>
+          <button class="btn btn-sm btn-secondary" onclick="changeStatus('${d.id}','review')">Review</button>
+          <button class="btn btn-sm btn-secondary" onclick="changeStatus('${d.id}','closed')">Closed</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ════════════════════════════════════════════════════
+   DETAIL: AI BANNER
+════════════════════════════════════════════════════ */
+function renderAIBanner(d) {
+  const roles = driveRoles[d.id] || [];
+  const totalTarget = roles.reduce((a, r) => a + (r.shortlist_count || 0), 0);
+  document.getElementById('ai-banner-wrap').innerHTML = `
+    <div class="ai-banner">
+      <div class="ai-banner-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+      <div class="ai-banner-text">
+        <h4>AI Shortlisting Available</h4>
+        <p>${roles.length} role(s) · Target: ${totalTarget} students · DeepSeek V4 Flash + Cohere Rerank 4 Pro</p>
+      </div>
+      <div class="ai-banner-actions">
+        <button class="btn btn-primary btn-sm" onclick="openAIModal('${d.id}')">
+          <i class="fa-solid fa-robot"></i> Run AI Shortlist
+        </button>
+      </div>
+    </div>`;
+}
+
+/* ════════════════════════════════════════════════════
+   DETAIL: ROLES TABLE
+════════════════════════════════════════════════════ */
+function renderShortlistedSection(d) {
+  const roles = driveRoles[d.id] || [];
+  document.getElementById('shortlisted-section').innerHTML = `
+    <div class="section-hdr">
+      <h2>Roles Summary</h2>
+      <div class="section-hdr-actions">
+        <button class="btn btn-success btn-sm" onclick="exportDriveRoles('${d.id}')">
+          <i class="fa-solid fa-file-excel"></i> Export Roles
+        </button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>Position</th><th>CTC / Stipend</th>
+          <th>Min CGPA</th><th>Min %</th><th>Max Backlogs</th>
+          <th>Shortlist Target</th><th>Departments</th>
+        </tr></thead>
+        <tbody>
+          ${roles.length
+            ? roles.map((r, i) => `
+                <tr>
+                  <td style="color:#9ca3af;">${i + 1}</td>
+                  <td><span style="font-weight:600;">${esc(r.position)}</span></td>
+                  <td>${r.ctc ? esc(r.ctc) : '<span style="color:#9ca3af;">—</span>'}</td>
+                  <td>${r.cgpa_min || '—'}</td>
+                  <td>${r.percentage_min ? r.percentage_min + '%' : '—'}</td>
+                  <td>${(r.backlogs_max !== null && r.backlogs_max < 99) ? r.backlogs_max : 'No limit'}</td>
+                  <td><span class="score-chip">${r.shortlist_count || 50}</span></td>
+                  <td>${(r.departments || []).join(', ') || 'All'}</td>
+                </tr>`).join('')
+            : `<tr><td colspan="8" style="text-align:center;color:var(--text-secondary);padding:24px;">No roles configured for this drive.</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+/* ════════════════════════════════════════════════════
+   AI CONFIG MODAL
+════════════════════════════════════════════════════ */
+function openAIModal(id) {
+  currentDriveId = id;
+  const d     = drives.find(x => x.id == id);
+  const roles = driveRoles[id] || [];
+
+  const warnHtml = !keysConfigured() ? `
+    <div class="api-warn">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div class="api-warn-text">
+        <h4>API Keys Not Configured on Server</h4>
+        <p>
+          Add <code>OPENROUTER_KEY</code> and <code>LLAMAPARSE_KEY</code>
+          to your <code>.env</code> file and restart the server.<br>
+          <strong>Running in demo mode</strong> (CGPA-based scoring — no real AI).
+        </p>
+      </div>
+    </div>` : '';
+
+  const pipeline = [
+    ['LlamaParse',           'PDF text extraction',            'fa-file-pdf',      '#ef4444'],
+    ['Qwen3-Embedding-8B',   'Semantic similarity · #1 MTEB',  'fa-brain',         'var(--blue)'],
+    ['DeepSeek V4 Flash',    'Deep scoring · 1M context',      'fa-microchip',     'var(--purple)'],
+    ['Cohere Rerank 4 Pro',  'Precision ranking · ELO 1627',   'fa-ranking-star',  'var(--success)'],
+  ];
+
+  document.getElementById('ai-modal-body').innerHTML = `
+    ${warnHtml}
+    <div style="background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:32px;height:32px;border-radius:8px;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:13px;flex-shrink:0;"><i class="fa-solid fa-building"></i></div>
+        <div>
+          <div style="font-size:13px;font-weight:600;">${esc(d.company_name)}</div>
+          <div style="font-size:11px;color:var(--text-secondary);">${esc(d.location)}</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
+      <div style="background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center;">
+        <div style="font-size:20px;font-weight:700;color:var(--blue);">${roles.length}</div>
+        <div style="font-size:10.5px;color:var(--text-secondary);">Roles</div>
+      </div>
+      <div style="background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center;">
+        <div style="font-size:20px;font-weight:700;color:var(--success);">${roles.reduce((a, r) => a + (r.shortlist_count || 50), 0)}</div>
+        <div style="font-size:10.5px;color:var(--text-secondary);">Target</div>
+      </div>
+      <div style="background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center;">
+        <div style="font-size:20px;font-weight:700;color:var(--purple);">4</div>
+        <div style="font-size:10.5px;color:var(--text-secondary);">AI Steps</div>
+      </div>
+    </div>
+    <div style="background:#fafcff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px;">
+      <div style="font-size:11.5px;font-weight:600;margin-bottom:8px;color:var(--text);">Pipeline</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        ${pipeline.map(([name, desc, icon, color]) => `
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:24px;height:24px;border-radius:6px;background:${color}1a;color:${color};display:grid;place-items:center;font-size:10px;flex-shrink:0;">
+              <i class="fa-solid ${icon}"></i>
+            </div>
+            <div>
+              <span style="font-size:11.5px;font-weight:600;">${name}</span>
+              <span style="font-size:11px;color:var(--text-secondary);"> · ${desc}</span>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  const runBtn = document.getElementById('ai-run-btn');
+  if (!keysConfigured()) {
+    runBtn.innerHTML = '<i class="fa-solid fa-robot"></i> Run in Demo Mode';
+    runBtn.style.background = 'var(--warning)';
+  } else {
+    runBtn.innerHTML = '<i class="fa-solid fa-robot"></i> Start AI Shortlisting';
+    runBtn.style.background = '';
+  }
+
+  document.getElementById('ai-modal').classList.add('open');
+}
+
+/* ════════════════════════════════════════════════════
+   STEP / PROGRESS HELPERS
+════════════════════════════════════════════════════ */
+function setStep(idx, state, detail) {
+  const el = document.getElementById(`step-${idx}`);
+  if (!el) return;
+  el.className = `ai-step ${state}`;
+  const dot = el.querySelector('.step-dot');
+  if (state === 'done') {
+    dot.innerHTML = '<i class="fa-solid fa-check" style="font-size:10px;"></i>';
+  } else {
+    dot.textContent = idx + 1;
+  }
+  if (detail !== undefined) {
+    const detailEl = document.getElementById(`step-${idx}-detail`);
+    if (detailEl) detailEl.textContent = detail;
+  }
+}
+
+function setProgress(pct, title, sub) {
+  document.getElementById('ai-prog-fill').style.width = pct + '%';
+  document.getElementById('ai-prog-pct').textContent  = pct + '%';
+  if (title) document.getElementById('ai-stage-title').textContent = title;
+  if (sub)   document.getElementById('ai-stage-sub').textContent   = sub;
+}
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ════════════════════════════════════════════════════
+   LLAMAPARSE — calls backend proxy (key stays server-side)
+════════════════════════════════════════════════════ */
+async function extractResumeText(resumeUrl, studentName) {
+  if (!resumeUrl || !keysConfigured()) return '';
+  try {
+    const uploadRes = await fetch(`${CONFIG.PROXY_BASE}/llamaparse/upload`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ url: resumeUrl }),
+    });
+    if (!uploadRes.ok) {
+      console.warn(`LlamaParse upload ${uploadRes.status}`);
+      return '';
+    }
+    const { id: jobId } = await uploadRes.json();
+    for (let i = 0; i < 20; i++) {
+      await wait(2000);
+      const statusRes  = await fetch(`${CONFIG.PROXY_BASE}/llamaparse/job/${jobId}`);
+      const statusData = await statusRes.json();
+      if (statusData.status === 'SUCCESS') {
+        const resultRes  = await fetch(`${CONFIG.PROXY_BASE}/llamaparse/job/${jobId}/result/markdown`);
+        const resultData = await resultRes.json();
+        return resultData.markdown || '';
+      }
+      if (statusData.status === 'ERROR') throw new Error('LlamaParse parse error');
+    }
+    return '';
+  } catch (err) {
+    console.warn(`LlamaParse failed for ${studentName}:`, err.message);
+    return '';
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   QWEN3 EMBEDDING — calls backend proxy
+════════════════════════════════════════════════════ */
+async function getEmbedding(text) {
+  const res = await fetch(`${CONFIG.PROXY_BASE}/openrouter/embeddings`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({
+      model: 'qwen/qwen3-embedding-8b',
+      input: text.slice(0, 8000),
+    }),
+  });
+  if (!res.ok) throw new Error(`Embedding API ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+  return data.data?.[0]?.embedding || [];
+}
+
+function cosineSim(a, b) {
+  if (!a.length || !b.length) return 0;
+  let dot = 0, na = 0, nb = 0;
+  for (let i = 0; i < a.length; i++) { dot += a[i]*b[i]; na += a[i]*a[i]; nb += b[i]*b[i]; }
+  return dot / (Math.sqrt(na) * Math.sqrt(nb) + 1e-9);
+}
+
+/* ════════════════════════════════════════════════════
+   DEEPSEEK V4 FLASH — calls backend proxy
+════════════════════════════════════════════════════ */
+async function scoreCandidatesWithLLM(jobDescription, candidates) {
+  /* Demo fallback when no API keys */
+  if (!keysConfigured()) {
+    return candidates.map((c, i) => ({
+      rank:         i + 1,
+      score:        Math.min(100, Math.round(((c.cgpa || 6) / 10) * 50 + Math.random() * 35 + 15)),
+      skills_match: (c.skills || []).slice(0, 3),
+      strengths:    'Good academic profile (demo mode)',
+      concern:      null,
+    }));
+  }
+
+  const candidateList = candidates.map((c, i) =>
+    `[${i+1}] Name:${c.name||'N/A'} | Dept:${c.department||'N/A'} | CGPA:${c.cgpa||'N/A'} | Skills:${(c.skills||[]).join(',')||'N/A'} | Resume:${(c.resumeText||'').slice(0,400)}`
+  ).join('\n');
+
+  const prompt = `You are an expert ATS system for campus placements at Alliance University.
+
+Job Description / Role Criteria:
+${jobDescription}
+
+Candidates (${candidates.length} total):
+${candidateList}
+
+For EACH candidate return a JSON array:
+[{"rank":1,"score":0-100,"skills_match":["skill1"],"strengths":"1 sentence","concern":"1 sentence or null"}]
+
+Rules: Score on CGPA 30%, skills 35%, projects 25%, communication 10%.
+Return ONLY a valid JSON array with no extra text or markdown fences.`;
+
+  const res = await fetch(`${CONFIG.PROXY_BASE}/openrouter/chat`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({
+      model:       'deepseek/deepseek-v4-flash:free',
+      max_tokens:  4000,
+      temperature: 0.1,
+      messages:    [{ role: 'user', content: prompt }],
+    }),
+  });
+  if (!res.ok) throw new Error(`DeepSeek API ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+  const raw  = data.choices?.[0]?.message?.content || '[]';
+  try {
+    return JSON.parse(raw.replace(/```json|```/g, '').trim());
+  } catch {
+    console.warn('LLM JSON parse failed, using demo scores');
+    return [];
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   COHERE RERANK 4 PRO — calls backend proxy
+════════════════════════════════════════════════════ */
+async function rerankCandidates(query, candidates) {
+  const docs = candidates.map(c =>
+    `${c.name||''} | ${c.department||''} | CGPA:${c.cgpa||''} | ${(c.skills||[]).join(', ')} | ${(c.resumeText||'').slice(0, 300)}`
+  );
+  const res = await fetch(`${CONFIG.PROXY_BASE}/openrouter/rerank`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({
+      model:     'cohere/rerank-4-pro',
+      query,
+      documents: docs,
+      top_n:     candidates.length,
+    }),
+  });
+  if (!res.ok) throw new Error(`Rerank API ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+  return (data.results || []).map(r => r.index);
+}
+
+/* ════════════════════════════════════════════════════
+   MAIN AI PIPELINE
+════════════════════════════════════════════════════ */
+async function startAIPipeline() {
+  const d     = drives.find(x => x.id == currentDriveId);
+  const roles = driveRoles[currentDriveId] || [];
+  if (!roles.length) {
+    showToast('No roles configured for this drive.', 'error');
+    return;
+  }
+
+  closeModal('ai-modal');
+  document.getElementById('ai-progress-modal').classList.add('open');
+  initLottie();
+
+  for (let i = 0; i < 5; i++) setStep(i, 'pending', 'Waiting…');
+  setProgress(0,
+    'Starting AI pipeline…',
+    keysConfigured() ? 'Connecting to AI services' : '⚠️ Running in demo mode — API keys not set in .env'
+  );
+
+  let allShortlisted = [];
+
+  try {
+    /* ─── STEP 0: Fetch students ─── */
+    setStep(0, 'active', 'Connecting to Supabase…');
+    setProgress(5, 'Fetching student data', 'Loading registered students');
+
+    const { data: students, error: studErr } = await db.from('student_registrations').select('*');
+    if (studErr) throw studErr;
+
+    const total = (students || []).length;
+    if (!total) {
+      closeModal('ai-progress-modal');
+      destroyLottie();
+      showToast('No students found in student_registrations table.', 'error');
+      return;
+    }
+
+    setStep(0, 'done', `${total} students loaded`);
+    setProgress(20, 'Students loaded!', `${total} registered students found`);
+    await wait(400);
+
+    /* ─── Per-role pipeline ─── */
+    for (let ri = 0; ri < roles.length; ri++) {
+      const role = roles[ri];
+      const jd   = [
+        `Position: ${role.position}.`,
+        role.description || '',
+        `Min CGPA: ${role.cgpa_min || 0}.`,
+        `Min %: ${role.percentage_min || 0}.`,
+        `Departments: ${(role.departments || []).join(', ') || 'All'}.`,
+        `CTC: ${role.ctc || 'N/A'}.`,
+      ].join(' ');
+
+      const eligible = (students || []).filter(s => {
+        const cgpa     = parseFloat(s.cgpa) || 0;
+        const pct      = parseFloat(s.percentage || s.twelfth_percent) || 0;
+        const backlogs = parseInt(s.active_backlogs || s.backlogs) || 0;
+        const dept     = s.department || s.dept || '';
+        return (
+          cgpa     >= (parseFloat(role.cgpa_min)       || 0) &&
+          pct      >= (parseFloat(role.percentage_min)  || 0) &&
+          backlogs <= (role.backlogs_max !== null ? parseInt(role.backlogs_max) : 99) &&
+          (!role.departments?.length || role.departments.includes(dept))
+        );
+      });
+
+      if (!eligible.length) {
+        showToast(`No eligible candidates for ${role.position}`, 'error');
+        continue;
+      }
+
+      /* ─── STEP 1: Resume extraction ─── */
+      setStep(1, 'active', `Processing up to 30 resumes for "${role.position}"…`);
+      setProgress(25, 'Extracting resume text', keysConfigured() ? 'LlamaParse parsing PDFs' : 'Skipped (no API key)');
+
+      const sample = eligible.slice(0, 30);
+      const withText = await Promise.all(
+        sample.map(async s => {
+          const text = s.resume_url ? await extractResumeText(s.resume_url, s.name || s.full_name) : '';
+          return {
+            ...s,
+            name:       s.name || s.full_name || 'Unknown',
+            resumeText: text || `${s.name || ''} ${s.department || ''} CGPA:${s.cgpa || ''} Skills:${(s.skills || []).join(',')}`,
+          };
+        })
+      );
+      setStep(1, 'done', `${withText.length} candidates prepared`);
+      setProgress(40, 'Resume data ready', `${withText.length} candidates prepared`);
+      await wait(300);
+
+      /* ─── STEP 2: Embedding ─── */
+      setStep(2, 'active', `Embedding ${withText.length} candidates…`);
+      setProgress(50, 'Semantic search', keysConfigured() ? 'Qwen3 embedding running' : 'Skipped (no API key)');
+
+      let top50 = withText;
+      try {
+        const jdEmbed  = await getEmbedding(jd);
+        const withSims = await Promise.all(
+          withText.map(async s => {
+            const emb = await getEmbedding(s.resumeText);
+            return { ...s, embSim: cosineSim(jdEmbed, emb) };
+          })
+        );
+        top50 = withSims.sort((a, b) => b.embSim - a.embSim).slice(0, 50);
+        setStep(2, 'done', `Top ${top50.length} by semantic similarity`);
+      } catch (embErr) {
+        console.warn('Embedding skipped:', embErr.message);
+        setStep(2, 'done', `${top50.length} candidates (embedding skipped)`);
+      }
+      setProgress(62, 'Candidate pool ready', `${top50.length} candidates selected`);
+      await wait(300);
+
+      /* ─── STEP 3: LLM scoring ─── */
+      setStep(3, 'active', `Scoring ${top50.length} candidates…`);
+      setProgress(72, 'AI scoring', keysConfigured() ? 'DeepSeek V4 Flash analysing' : 'Demo scoring (no API key)');
+
+      let llmScores = [];
+      try {
+        llmScores = await scoreCandidatesWithLLM(jd, top50);
+      } catch (llmErr) {
+        console.warn('LLM scoring fallback:', llmErr.message);
+      }
+
+      const scoredCandidates = top50.map((s, i) => {
+        const ls = llmScores[i] || {};
+        const score = ls.score != null
+          ? ls.score
+          : Math.min(100, Math.round(((parseFloat(s.cgpa) || 6) / 10) * 50 + Math.random() * 30 + 20));
+        return {
+          ...s,
+          llmScore:    score,
+          skillsMatch: ls.skills_match || [],
+          strengths:   ls.strengths  || 'Profile-based score',
+          concern:     ls.concern    || null,
+        };
+      });
+
+      setStep(3, 'done', `${scoredCandidates.length} scored`);
+      setProgress(84, 'Scoring complete', 'Preparing final ranking');
+      await wait(300);
+
+      /* ─── STEP 4: Rerank ─── */
+      setStep(4, 'active', `Reranking for "${role.position}"…`);
+      setProgress(92, 'Precision reranking', keysConfigured() ? 'Cohere Rerank 4 Pro' : 'Sorting by AI score (no API key)');
+
+      let finalOrder = [...scoredCandidates];
+      try {
+        const reorderIndices = await rerankCandidates(jd, scoredCandidates);
+        if (reorderIndices.length) {
+          finalOrder = reorderIndices
+            .map(idx => scoredCandidates[idx])
+            .filter(Boolean)
+            .map((c, i) => ({ ...c, finalRank: i + 1 }));
+        }
+        setStep(4, 'done', 'Final rank ready');
+      } catch (rerankErr) {
+        console.warn('Rerank fallback:', rerankErr.message);
+        finalOrder = scoredCandidates
+          .sort((a, b) => b.llmScore - a.llmScore)
+          .map((c, i) => ({ ...c, finalRank: i + 1 }));
+        setStep(4, 'done', 'Ranked by score (rerank skipped)');
+      }
+
+      const target = role.shortlist_count || 50;
+      const shortlisted = finalOrder.slice(0, target).map((s, i) => ({
+        ...s,
+        rolePosition: role.position,
+        roleCTC:      role.ctc || '—',
+        finalRank:    i + 1,
+      }));
+      allShortlisted = allShortlisted.concat(shortlisted);
+    }
+
+    setProgress(100, 'Complete! 🎉', `${allShortlisted.length} students shortlisted`);
+    await wait(800);
+
+    closeModal('ai-progress-modal');
+    destroyLottie();
+
+    if (!allShortlisted.length) {
+      showToast('No eligible candidates found. Check eligibility criteria.', 'error');
+      return;
+    }
+
+    lastShortlistResult = allShortlisted;
+    lastDriveForExport  = d;
+    showResultModal(d, allShortlisted, roles);
+    showToast(`✨ ${allShortlisted.length} students shortlisted${keysConfigured() ? '' : ' (demo mode)'}!`, 'success');
+
+  } catch (err) {
+    console.error('AI pipeline error:', err);
+    closeModal('ai-progress-modal');
+    destroyLottie();
+    showToast('Pipeline error: ' + err.message, 'error');
+  }
+}
+
+function destroyLottie() {
+  if (lottieAnim) { try { lottieAnim.destroy(); } catch(e){} lottieAnim = null; }
+}
+
+/* ════════════════════════════════════════════════════
+   RESULT MODAL
+════════════════════════════════════════════════════ */
+function showResultModal(d, shortlisted, roles) {
+  const byRole = {};
+  shortlisted.forEach(s => {
+    if (!byRole[s.rolePosition]) byRole[s.rolePosition] = [];
+    byRole[s.rolePosition].push(s);
+  });
+
+  const medal = rank => {
+    if (rank === 1) return '<i class="fa-solid fa-medal medal-gold"></i>';
+    if (rank === 2) return '<i class="fa-solid fa-medal medal-silver"></i>';
+    if (rank === 3) return '<i class="fa-solid fa-medal medal-bronze"></i>';
+    return `<span style="font-size:11px;color:var(--text-secondary);font-weight:600;">#${rank}</span>`;
+  };
+
+  const fitBar = score => {
+    const cls = score >= 70 ? 'fit-high' : score >= 50 ? 'fit-mid' : 'fit-low';
+    return `<div class="fit-bar"><div class="fit-fill ${cls}" style="width:${score}%;"></div></div>`;
+  };
+
+  const demoNote = !keysConfigured() ? `
+    <div style="background:var(--warning-bg);border:1px solid #fde68a;border-radius:var(--radius);padding:10px 14px;margin-bottom:12px;font-size:12px;color:#92400e;">
+      <i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i>
+      <strong>Demo mode</strong> — scores are CGPA-based estimates. Add API keys to <code>.env</code> for real AI scoring.
+    </div>` : '';
+
+  const avgScore = shortlisted.length
+    ? Math.round(shortlisted.reduce((a, s) => a + (s.llmScore || 0), 0) / shortlisted.length)
+    : 0;
+
+  const roleTables = Object.entries(byRole).map(([pos, students]) => `
+    <div style="margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--blue);display:inline-block;"></span>
+        ${esc(pos)}
+        <span class="badge open" style="font-size:10px;">${students.length} shortlisted</span>
+      </div>
+      <div class="table-wrap shortlist-preview">
+        <table>
+          <thead><tr>
+            <th>Rank</th><th>Student</th><th>Dept</th><th>CGPA</th><th>AI Score</th><th>Skills</th><th>Insight</th>
+          </tr></thead>
+          <tbody>
+            ${students.map(s => `
+              <tr>
+                <td style="text-align:center;">${medal(s.finalRank)}</td>
+                <td>
+                  <span class="cand-name">${esc(s.name || s.full_name || '—')}</span>
+                  <span class="cand-email">${esc(s.email || s.usn || '—')}</span>
+                </td>
+                <td>${esc(s.department || s.dept || '—')}</td>
+                <td>
+                  <span class="cgpa-chip ${(parseFloat(s.cgpa)||0)>=8?'cgpa-high':(parseFloat(s.cgpa)||0)>=6?'cgpa-mid':'cgpa-low'}">
+                    ${s.cgpa || '—'}
+                  </span>
+                </td>
+                <td>
+                  <span class="score-chip">${s.llmScore || '—'}</span>
+                  ${fitBar(s.llmScore || 50)}
+                </td>
+                <td>
+                  <div class="skills-list">
+                    ${(s.skillsMatch || s.skills || []).slice(0, 3).map(sk => `<span class="skill-tag">${esc(sk)}</span>`).join('')}
+                  </div>
+                </td>
+                <td style="font-size:11px;color:var(--text-secondary);max-width:140px;">${esc(s.strengths || '—')}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('ai-result-body').innerHTML = `
+    <div class="result-hero">
+      <i class="fa-solid fa-circle-check"></i>
+      <h4>Shortlisting Complete</h4>
+      <p>${shortlisted.length} students shortlisted for ${esc(d.company_name)} across ${roles.length} role(s)</p>
+    </div>
+    ${demoNote}
+    <div class="result-stats">
+      <div class="result-stat"><strong>${shortlisted.length}</strong><span>Shortlisted</span></div>
+      <div class="result-stat"><strong>${roles.length}</strong><span>Roles</span></div>
+      <div class="result-stat"><strong>${avgScore}</strong><span>Avg Score</span></div>
+    </div>
+    ${roleTables}`;
+
+  document.getElementById('export-result-btn').onclick = () =>
+    exportShortlistedCSV(lastDriveForExport, lastShortlistResult);
+
+  document.getElementById('ai-result-modal').classList.add('open');
+}
+
+/* ════════════════════════════════════════════════════
+   DELETE DRIVE
+════════════════════════════════════════════════════ */
+function confirmDelete(id) {
+  const d = drives.find(x => x.id == id);
+  if (!d) return;
+  document.getElementById('del-modal-body').innerHTML = `
+    <p style="font-size:12.5px;margin-bottom:10px;">
+      Are you sure you want to delete the drive for <strong>${esc(d.company_name)}</strong>?
+      This will also delete all associated roles. This action cannot be undone.
+    </p>`;
+  document.getElementById('del-confirm-btn').onclick = () => deleteDrive(id);
+  document.getElementById('del-modal').classList.add('open');
+}
+
+async function deleteDrive(id) {
+  showLoading('Deleting drive…');
+  closeModal('del-modal');
+  try {
+    await db.from('drive_roles').delete().eq('drive_id', id);
+    const { error } = await db.from('drives').delete().eq('id', id);
+    if (error) throw error;
+    showToast('Drive deleted successfully.', 'success');
+    goBack();
+    await loadDrives();
+  } catch (err) {
+    hideLoading();
+    showToast('Delete failed: ' + err.message, 'error');
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   STATUS CHANGE
+════════════════════════════════════════════════════ */
+async function changeStatus(id, newStatus) {
+  try {
+    const { error } = await db.from('drives').update({ status: newStatus }).eq('id', id);
+    if (error) throw error;
+    const d = drives.find(x => x.id == id);
+    if (d) {
+      d.status = newStatus;
+      renderDetailHero(d);
+      renderDetailInfo(d);
+    }
+    showToast(`Status changed to "${cap(newStatus)}"`, 'success');
+  } catch (err) {
+    showToast('Status update failed: ' + err.message, 'error');
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   EXPORTS
+════════════════════════════════════════════════════ */
+function exportShortlistedCSV(d, list) {
+  if (!d || !list?.length) { showToast('Nothing to export.', 'error'); return; }
+  const headers = ['Rank','Role','Name','USN/ID','Department','CGPA','AI Score',
+                   'Skills Match','Strengths','Concern','Email','Phone'];
+  const rows = list.map(s => [
+    s.finalRank  || '—',
+    s.rolePosition || '—',
+    s.name       || s.full_name || '—',
+    s.usn        || s.id        || '—',
+    s.department || s.dept      || '—',
+    s.cgpa       || '—',
+    s.llmScore   || '—',
+    (s.skillsMatch || s.skills || []).join(' | '),
+    s.strengths  || '—',
+    s.concern    || '—',
+    s.email      || '—',
+    s.phone      || '—',
+  ]);
+  const meta = [
+    [`AI Shortlisting Report: ${d.company_name}`],
+    [`Location: ${d.location}`],
+    [`Mode: ${keysConfigured() ? 'Full AI Pipeline' : 'Demo Mode'}`],
+    [`Generated: ${new Date().toLocaleString('en-IN')}`],
+    [],
+    headers,
+    ...rows,
+  ];
+  downloadCSV(meta, `${d.company_name}_AI_shortlisted.csv`);
+  showToast('CSV exported!', 'success');
+}
+
+function exportDriveRoles(id) {
+  const d     = drives.find(x => x.id == id);
+  const roles = driveRoles[id] || [];
+  if (!roles.length) { showToast('No roles to export.', 'error'); return; }
+  const headers = ['Position','CTC','Min CGPA','Min %','Max Backlogs','Shortlist Target','Departments'];
+  const rows = roles.map(r => [
+    r.position,
+    r.ctc             || '—',
+    r.cgpa_min        || 0,
+    r.percentage_min  || 0,
+    (r.backlogs_max != null && r.backlogs_max < 99) ? r.backlogs_max : 'No limit',
+    r.shortlist_count || 50,
+    (r.departments || []).join(' | '),
+  ]);
+  downloadCSV([headers, ...rows], `${d.company_name}_roles.csv`);
+  showToast('Roles exported!', 'success');
+}
+
+function exportAllDrives() {
+  if (!drives.length) { showToast('No drives to export.', 'error'); return; }
+  const headers = ['Company','Location','Status','Roles','Created'];
+  const rows = drives.map(d => [
+    d.company_name,
+    d.location,
+    d.status,
+    (driveRoles[d.id] || []).length,
+    fmtDateFull(d.created_at),
+  ]);
+  downloadCSV([headers, ...rows], 'all_drives.csv');
+  showToast('All drives exported!', 'success');
+}
+
+function downloadCSV(rows, filename) {
+  const csv = rows
+    .map(r => r.map(c => `"${String(c ?? '').replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+  const a   = document.createElement('a');
+  a.href     = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
+  a.download = filename;
+  a.click();
+}
+
+/* ════════════════════════════════════════════════════
+   MODAL HELPERS
+════════════════════════════════════════════════════ */
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('open');
+}
+
+/* ════════════════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════════════════ */
+function cap(s) { return s ? s[0].toUpperCase() + s.slice(1) : ''; }
+
+function esc(s) {
+  return String(s || '')
+    .replace(/&/g,  '&amp;')
+    .replace(/</g,  '&lt;')
+    .replace(/>/g,  '&gt;')
+    .replace(/"/g,  '&quot;');
+}
+
+function fmtDate(val) {
+  if (!val) return '—';
+  try {
+    const d = new Date(val);
+    return isNaN(d) ? '—' : d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+  } catch { return '—'; }
+}
+
+function fmtDateFull(val) {
+  if (!val) return '—';
+  try {
+    const d = new Date(val);
+    return isNaN(d) ? '—' : d.toLocaleString('en-IN', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  } catch { return '—'; }
+}
+
+function emptyState(msg) {
+  return `
+    <div class="empty-state">
+      <i class="fa-solid fa-briefcase"></i>
+      <h3>No drives found</h3>
+      <p>${msg}</p>
+    </div>`;
+}
+
+function showToast(msg, type) {
+  const el   = document.createElement('div');
+  el.className = `toast ${type || ''}`;
+  const icon = type === 'success' ? 'fa-check-circle'
+             : type === 'error'   ? 'fa-circle-xmark'
+             : 'fa-info-circle';
+  el.innerHTML = `<i class="fa-solid ${icon}"></i>${msg}`;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+</script>
+</body>
+</html>

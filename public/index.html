@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Alliance University | CAN Department ATS Portal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<link rel="icon" href="images/Alliance_University_Icon.svg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+<style>
+:root {
+  --surface:#ffffff;
+  --text:#1d1d1f;
+  --text-secondary:#6b7280;
+  --border:#e8dfd7;
+  --border-light:#f1f5f9;
+  --success:#16a34a;
+  --success-bg:#dcfce7;
+  --warning:#d97706;
+  --warning-bg:#fff7ed;
+  --danger:#dc2626;
+  --danger-bg:#fef2f2;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg:0 10px 30px rgba(0,0,0,.1);
+  --radius-sm:6px; --radius-md:8px; --radius-lg:10px; --radius-xl:14px;
+  --navbar-height:56px;
+  --sidebar-width:220px;
+  --blue:rgb(0,125,251);
+  --blue-dark:rgb(1,106,211);
+  --blue-bg:#eff6ff;
+  --blue-border:#dbeafe;
+  --purple:#7c3aed;
+  --purple-bg:#f5f3ff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:13px;}
+body{font-family:'Poppins',sans-serif;background:#f8fafc;color:var(--text);font-size:13px;line-height:1.5;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
+
+/* ── NAVBAR ── */
+.navbar{
+  position:fixed;top:0;left:0;right:0;
+  height:var(--navbar-height);
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+}
+.navbar-logo{display:flex;align-items:center;gap:10px;}
+.navbar-logo img{height:34px;width:auto;cursor:pointer;background:#e5e7eb;border-radius:4px;min-width:100px;}
+.nav-actions{display:flex;align-items:center;gap:8px;}
+.icon-btn{width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:#fff;display:grid;place-items:center;color:var(--text-secondary);cursor:pointer;font-size:12.5px;transition:.15s;}
+.icon-btn:hover{background:#f8f2ee;color:#374151;}
+.profile{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:8px;cursor:pointer;transition:.15s;}
+.profile:hover{background:#f9fafb;}
+.avatar-circle{width:28px;height:28px;border-radius:50%;background:#e5e7eb;display:grid;place-items:center;font-size:11px;font-weight:600;color:#6b7280;flex-shrink:0;}
+.profile-info strong{display:block;font-size:12px;font-weight:600;line-height:1.3;}
+.profile-info span{display:block;font-size:10.5px;color:var(--text-secondary);}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  position:fixed;top:var(--navbar-height);left:0;
+  width:var(--sidebar-width);height:calc(100vh - var(--navbar-height));
+  background:#fff;border-right:1px solid var(--border);
+  padding:10px 8px;overflow-y:auto;z-index:100;
+}
+.sidebar-menu{list-style:none;}
+.sidebar-menu li{margin-bottom:2px;}
+.sidebar-menu a{display:flex;align-items:center;gap:9px;text-decoration:none;color:#374151;padding:7px 10px;border-radius:7px;font-weight:500;font-size:12.5px;transition:.15s;cursor:pointer;}
+.sidebar-menu a i{width:15px;text-align:center;font-size:12px;color:var(--blue);flex-shrink:0;}
+.sidebar-menu a:hover{background:var(--blue-bg);color:var(--blue);}
+.sidebar-menu a.active{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(0,125,251,.25);}
+.sidebar-menu a.active i{color:#fff;}
+
+/* ── MAIN ── */
+.main{
+  margin-left:var(--sidebar-width);
+  padding-top:var(--navbar-height);
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  width:calc(100% - var(--sidebar-width));
+  position:relative;
+}
+.main-body{flex:1;padding:0;}
+
+/* ════════════════════════════════════
+   CONTENT LOADING OVERLAY
+   — sits inside .main, so it only covers
+     the content area (not navbar/sidebar)
+════════════════════════════════════ */
+.content-loading-overlay{
+  position:absolute;
+  top:0; left:0; right:0; bottom:0;
+  background:rgba(248,250,252,.82);
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+  z-index:200;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:12px;
+  border-radius:0;
+}
+.content-loading-overlay.show{display:flex;}
+.loading-spinner{
+  position:absolute;
+  top: 350px;
+  left: 50%;
+  width:36px;height:36px;
+  border:3px solid var(--border-light);
+  border-top-color:var(--blue);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+.loading-text{   position:absolute;
+  top: 400px;
+  left: 46.5%;
+  font-size:13px;color:var(--text-secondary);font-weight:500;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);}
+
+/* ── HERO ── */
+.hero{padding:18px 20px 20px;}
+.hero-left{
+  background:url('images/alliance_hero_img.webp') no-repeat center center;
+  background-size:cover;
+  height:420px;color:#fff;
+  border-radius:var(--radius-xl);
+  padding:28px 32px 32px;
+  position:relative;overflow:hidden;
+  box-shadow:var(--shadow-lg);
+}
+.hero-left::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(10,30,80,.72) 0%,rgba(0,80,160,.45) 100%);
+  border-radius:inherit;pointer-events:none;z-index:0;
+}
+.hero-left>*{position:relative;z-index:1;}
+.badge-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);
+  border-radius:999px;font-size:11px;font-weight:500;margin-bottom:12px;
+}
+.hero h2{font-size:20px;font-weight:700;line-height:1.25;margin-bottom:0;letter-spacing:-.02em;max-width:480px;}
+.hero-stats{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.stat-pill{
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);
+  color:#fff;padding:9px 14px;border-radius:9px;min-width:100px;
+}
+.stat-pill strong{display:block;font-size:17px;font-weight:700;line-height:1.2;}
+.stat-pill span{font-size:10.5px;opacity:.85;font-weight:400;}
+.hero-actions{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:inherit;font-weight:500;font-size:12.5px;transition:.15s;text-decoration:none;border-radius:7px;padding:7px 13px;border:none;white-space:nowrap;}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary:hover{background:var(--blue-dark);transform:translateY(-1px);}
+.btn-ghost-white{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);color:#fff;}
+.btn-ghost-white:hover{background:rgba(255,255,255,.24);}
+.btn-ai{background:#f0f4ff;color:var(--blue);border:1px solid var(--blue-border);}
+.btn-ai:hover{background:#dbeafe;}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.btn-secondary{background:#fff;color:var(--text);border:1px solid var(--border);}
+.btn-secondary:hover{background:#f9fafb;}
+
+/* ── SECTION ── */
+.section{padding:0 20px 20px;}
+.section-title{font-size:14.5px;font-weight:600;margin-bottom:3px;color:var(--blue);letter-spacing:-.01em;}
+.section-subtitle{color:var(--text-secondary);margin-bottom:14px;font-size:12px;line-height:1.5;}
+
+/* ── DRIVE CARDS ── */
+.drive-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;}
+.drive-card{padding:16px;cursor:pointer;transition:.15s;}
+.drive-card:hover{border-color:#cbd5e1;box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.drive-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.drive-company{display:flex;align-items:center;gap:10px;}
+.company-icon{width:34px;height:34px;border-radius:8px;background:#f1f5f9;border:1px solid #e2e8f0;display:grid;place-items:center;font-size:15px;flex-shrink:0;color:#374151;overflow:hidden;}
+.company-icon img{width:100%;height:100%;object-fit:contain;}
+.drive-company h4{font-size:13px;font-weight:600;margin-bottom:1px;line-height:1.3;}
+.drive-company span{font-size:11.5px;color:var(--text-secondary);font-weight:400;}
+.status{display:inline-flex;align-items:center;padding:2px 9px;border-radius:99px;font-size:10.5px;font-weight:600;flex-shrink:0;}
+.status.open,.badge.open{background:#f0fdf4;color:var(--success);}
+.status.review,.badge.review{background:#fffbeb;color:var(--warning);}
+.status.closed,.badge.closed{background:var(--danger-bg);color:var(--danger);}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:99px;font-size:10.5px;font-weight:600;}
+.drive-meta{display:flex;flex-direction:column;gap:5px;}
+.drive-meta div{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-secondary);}
+.drive-meta div i{width:13px;text-align:center;font-size:11px;color:#9ca3af;}
+.drive-footer{margin-top:13px;padding-top:11px;border-top:1px solid var(--border-light);display:flex;gap:7px;}
+
+/* ── SKELETON ── */
+.skel{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--radius-md);}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-card{padding:16px;}
+.skel-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.skel-avatar{width:34px;height:34px;border-radius:8px;flex-shrink:0;}
+.skel-line{height:10px;border-radius:4px;}
+
+/* ── FEATURES ── */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
+.feature-card{padding:18px;}
+.feature-icon{width:38px;height:38px;border-radius:9px;background:var(--blue-bg);color:var(--blue);display:grid;place-items:center;font-size:15px;margin-bottom:11px;}
+.feature-card h4{margin-bottom:5px;font-size:13px;font-weight:600;line-height:1.3;}
+.feature-card p{color:var(--text-secondary);line-height:1.55;font-size:12px;font-weight:400;}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:7px;}
+.toast{background:#1d1d1f;color:#fff;border-radius:var(--radius-md);padding:10px 14px;font-size:12.5px;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow-lg);min-width:210px;animation:slideUp .25s ease;}
+.toast.success{background:var(--success);}
+.toast.error{background:var(--danger);}
+@keyframes slideUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:36px 20px;grid-column:1/-1;}
+.empty-state i{font-size:28px;color:#d1d5db;margin-bottom:8px;display:block;}
+.empty-state h3{font-size:13px;font-weight:600;margin-bottom:4px;}
+.empty-state p{font-size:12px;color:var(--text-secondary);}
+
+/* ── FOOTER ── */
+.footer{background:#fff;border-top:1px solid var(--border);width:100%;}
+.footer-inner{padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;color:var(--text-secondary);font-size:11.5px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){.sidebar{display:none;}.main{margin-left:0;width:100%;}.profile-info{display:none;}}
+@media(max-width:640px){.hero{padding:14px 14px 16px;}.section{padding:0 14px 16px;}.hero h2{font-size:17px;}.hero-stats{flex-direction:column;}.hero-actions{flex-wrap:wrap;}.footer-inner{padding:10px 14px;}}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="navbar-logo">
+    <img src = "images/techrecruitai_logo.png" alt="TechRecruitAI" onclick="window.location.href='index.html'"/>
+  </div>
+  <div class="nav-actions">
+    <button class="icon-btn" title="Help"><i class="fa-regular fa-circle-question"></i></button>
+    <div class="profile">
+      <div class="avatar-circle">CT</div>
+      <div class="profile-info">
+        <strong>CAN Team</strong>
+        <span>Placement Officer</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <ul class="sidebar-menu">
+    <li><a href="index.html" class="active"><i class="fa-solid fa-house"></i>Home</a></li>
+    <li><a href="create-drive.html"><i class="fa-solid fa-plus-circle"></i>Create Drive</a></li>
+    <li><a href="recent-drives.html"><i class="fa-solid fa-briefcase"></i>Recent Drives</a></li>
+    <li><a href="candidates.html"><i class="fa-solid fa-users"></i>Candidates</a></li>
+    <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+    <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+  </ul>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- CONTENT LOADING OVERLAY (only covers .main, not navbar/sidebar) -->
+  <div class="content-loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loading-text">Loading dashboard…</div>
+  </div>
+
+  <div class="main-body">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-left">
+        <div class="badge-pill"><i class="fa-solid fa-sparkles"></i>Alliance University</div>
+        <h2>Campus Recruitment with Intelligent Shortlisting</h2>
+        <div class="hero-stats">
+          <div class="stat-pill">
+            <strong id="stat-drives">—</strong>
+            <span>Active Drives</span>
+          </div>
+          <div class="stat-pill">
+            <strong id="stat-applications">—</strong>
+            <span>Total Applications</span>
+          </div>
+          <div class="stat-pill">
+            <strong id="stat-shortlisted">—</strong>
+            <span>AI Shortlisted</span>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="create-drive.html">
+            <i class="fa-solid fa-plus-circle"></i> Create Drive
+          </a>
+          <a class="btn btn-ghost-white" href="recent-drives.html">
+            <i class="fa-solid fa-briefcase"></i> View All Drives
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECENT DRIVES -->
+    <section class="section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+        <h2 class="section-title" style="margin-bottom:0;">Recent Drives</h2>
+        <a href="recent-drives.html" class="btn btn-secondary btn-sm">
+          <i class="fa-solid fa-arrow-right"></i> View All
+        </a>
+      </div>
+      <p class="section-subtitle">Overview of the latest recruitment drives managed by the CAN team.</p>
+
+      <!-- Skeleton cards shown while loading -->
+      <div class="drive-grid" id="recent-drives-grid">
+        <div class="card skel-card">
+          <div class="skel-top">
+            <div class="skel skel-avatar"></div>
+            <div style="flex:1">
+              <div class="skel skel-line" style="width:60%;margin-bottom:6px;"></div>
+              <div class="skel skel-line" style="width:40%;"></div>
+            </div>
+          </div>
+          <div class="skel skel-line" style="width:80%;margin-bottom:6px;"></div>
+          <div class="skel skel-line" style="width:55%;margin-bottom:6px;"></div>
+          <div class="skel skel-line" style="width:65%;"></div>
+        </div>
+        <div class="card skel-card">
+          <div class="skel-top">
+            <div class="skel skel-avatar"></div>
+            <div style="flex:1">
+              <div class="skel skel-line" style="width:65%;margin-bottom:6px;"></div>
+              <div class="skel skel-line" style="width:45%;"></div>
+            </div>
+          </div>
+          <div class="skel skel-line" style="width:75%;margin-bottom:6px;"></div>
+          <div class="skel skel-line" style="width:50%;margin-bottom:6px;"></div>
+          <div class="skel skel-line" style="width:70%;"></div>
+        </div>
+        <div class="card skel-card">
+          <div class="skel-top">
+            <div class="skel skel-avatar"></div>
+            <div style="flex:1">
+              <div class="skel skel-line" style="width:55%;margin-bottom:6px;"></div>
+              <div class="skel skel-line" style="width:35%;"></div>
+            </div>
+          </div>
+          <div class="skel skel-line" style="width:70%;margin-bottom:6px;"></div>
+          <div class="skel skel-line" style="width:45%;margin-bottom:6px;"></div>
+          <div class="skel skel-line" style="width:60%;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLATFORM FEATURES -->
+    <section class="section">
+      <h2 class="section-title">Platform Features</h2>
+      <p class="section-subtitle">Purpose-built tools to simplify recruitment management for the CAN Department.</p>
+      <div class="features-grid">
+        <div class="card feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
+          <h4>AI Resume Shortlisting</h4>
+          <p>Automatically rank and shortlist candidates based on CGPA, skills, certifications, and job requirements.</p>
+        </div>
+        <div class="card feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-filter"></i></div>
+          <h4>Advanced Filtering</h4>
+          <p>Filter applicants by department, backlogs, percentages, and custom eligibility criteria.</p>
+        </div>
+        <div class="card feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-chart-column"></i></div>
+          <h4>Recruitment Analytics</h4>
+          <p>Monitor application volume, shortlist ratios, and placement performance in real time.</p>
+        </div>
+        <div class="card feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-file-arrow-down"></i></div>
+          <h4>Export Reports</h4>
+          <p>Download shortlisted candidates and drive summaries as Excel or PDF reports.</p>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /main-body -->
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>© 2026 Alliance University – CAN Department ATS Portal</span>
+      <span>Built for Intelligent Campus Recruitment</span>
+    </div>
+  </footer>
+
+</main>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+
+const SUPABASE_URL  = "https://zaqfpoobhvvyndtazyxw.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphcWZwb29iaHZ2eW5kdGF6eXh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzUwMzUsImV4cCI6MjA5MzkxMTAzNX0.nfGqIZpcp_Vl3t0rJX84qB4QhiIyhC-q9GfAcboV2hI";
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+/* ══════════════════════════════════════
+   LOADING HELPERS  — only .main content area
+══════════════════════════════════════ */
+function showLoading(msg) {
+  document.getElementById('loading-text').textContent = msg || 'Loading…';
+  document.getElementById('loading-overlay').classList.add('show');
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('show');
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', loadDashboard);
+
+async function loadDashboard() {
+  showLoading('Loading dashboard…');
+  try {
+    /* 1. Recent drives */
+    const { data: driveRows, error: driveErr } = await db
+      .from('drives')
+      .select('id, company_name, location, logo_url, status, created_at')
+      .order('created_at', { ascending: false })
+      .limit(6);
+    if (driveErr) throw driveErr;
+
+    const drives = (driveRows || []).map(normalise);
+
+    /* 2. Roles */
+    const { data: roleRows, error: roleErr } = await db
+      .from('drive_roles')
+      .select('drive_id, position, shortlist_count');
+    if (roleErr) throw roleErr;
+
+    /* 3. Active drives count */
+    const { count: activeDrives } = await db
+      .from('drives')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'open');
+
+    /* 4. Student/applications count */
+    const { count: studentCount } = await db
+      .from('student_registrations')
+      .select('id', { count: 'exact', head: true });
+
+    /* Group roles by drive */
+    const driveRoles = {};
+    (roleRows || []).forEach(r => {
+      if (!driveRoles[r.drive_id]) driveRoles[r.drive_id] = [];
+      driveRoles[r.drive_id].push(r);
+    });
+
+    /* Total shortlist target */
+    const totalShortlisted = (roleRows || []).reduce((a, r) => a + (r.shortlist_count || 0), 0);
+
+    /* ── Hero stats ── */
+    animateCount('stat-drives',       activeDrives     || 0);
+    animateCount('stat-applications', studentCount     || 0);
+    animateCount('stat-shortlisted',  totalShortlisted || 0);
+
+    /* ── Cards ── */
+    renderRecentDrives(drives.slice(0, 3), driveRoles);
+
+  } catch (err) {
+    console.error('Dashboard load error:', err);
+    showToast('Could not load live data: ' + err.message, 'error');
+    renderRecentDrives([], {});
+  } finally {
+    hideLoading();
+  }
+}
+
+/* ── Normalise ── */
+function normalise(d) {
+  return {
+    id:           d.id,
+    company_name: d.company_name || 'Unknown Company',
+    location:     d.location     || '—',
+    logo_url:     d.logo_url     || null,
+    status:       d.status       || 'open',
+    created_at:   d.created_at   || null,
+  };
+}
+
+/* ── Render Drive Cards ── */
+function renderRecentDrives(drives, driveRoles) {
+  const g = document.getElementById('recent-drives-grid');
+
+  if (!drives.length) {
+    g.innerHTML = `<div class="empty-state">
+      <i class="fa-solid fa-briefcase"></i>
+      <h3>No drives yet</h3>
+      <p>Create your first placement drive to get started.</p>
+    </div>`;
+    return;
+  }
+
+  g.innerHTML = drives.map(d => {
+    const roles       = driveRoles[d.id] || [];
+    const roleLabel   = roles.length === 0 ? 'No roles'
+                      : roles.length === 1 ? roles[0].position
+                      : `${roles[0].position} +${roles.length - 1} more`;
+    const totalTarget = roles.reduce((a, r) => a + (r.shortlist_count || 0), 0);
+    const needsAI     = totalTarget === 0;
+
+    return `
+    <div class="card drive-card" onclick="window.location.href='recent-drives.html'">
+      <div class="drive-top">
+        <div class="drive-company">
+          <div class="company-icon">
+            ${d.logo_url
+              ? `<img src="${esc(d.logo_url)}" alt="${esc(d.company_name)}" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-building\\'></i>'"/>`
+              : `<i class="fa-solid fa-building"></i>`}
+          </div>
+          <div>
+            <h4>${esc(d.company_name)}</h4>
+            <span>${esc(roleLabel)}</span>
+          </div>
+        </div>
+        <span class="status ${d.status}">${cap(d.status)}</span>
+      </div>
+      <div class="drive-meta">
+        <div><i class="fa-solid fa-location-dot"></i>${esc(d.location)}</div>
+        <div><i class="fa-solid fa-layer-group"></i>${roles.length} role${roles.length !== 1 ? 's' : ''}</div>
+        ${totalTarget > 0
+          ? `<div><i class="fa-solid fa-robot"></i>${totalTarget} target shortlisted</div>`
+          : `<div style="color:#9ca3af;"><i class="fa-solid fa-robot"></i>Not shortlisted yet</div>`}
+        ${fmtDate(d.created_at) !== '—'
+          ? `<div><i class="fa-solid fa-calendar"></i>Added ${fmtDate(d.created_at)}</div>`
+          : ''}
+      </div>
+      <div class="drive-footer">
+        ${needsAI
+          ? `<button class="btn btn-ai" onclick="event.stopPropagation();window.location.href='recent-drives.html'">
+               <i class="fa-solid fa-robot"></i>Shortlist via AI
+             </button>`
+          : `<a class="btn btn-primary" href="recent-drives.html" onclick="event.stopPropagation();" style="font-size:12px;padding:6px 12px;">
+               <i class="fa-solid fa-arrow-right"></i>View Drive
+             </a>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Count-up animation ── */
+function animateCount(id, target) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const duration = 900;
+  const start = performance.now();
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased    = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(eased * target).toLocaleString('en-IN');
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target.toLocaleString('en-IN');
+  }
+  requestAnimationFrame(step);
+}
+
+/* ── Helpers ── */
+function cap(s) { return s ? s[0].toUpperCase() + s.slice(1) : ''; }
+function esc(s) {
+  return String(s || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(val) {
+  if (!val) return '—';
+  try {
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+  } catch { return '—'; }
+}
+function showToast(msg, type) {
+  const el   = document.createElement('div');
+  el.className = `toast ${type || ''}`;
+  const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-circle-xmark' : 'fa-info-circle';
+  el.innerHTML = `<i class="fa-solid ${icon}"></i>${msg}`;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+/* Nav logo */
+const navLogo = document.querySelector('.navbar-logo-img');
+if (navLogo) navLogo.addEventListener('click', () => { window.location.href = 'index.html'; });
+</script>
+</body>
+</html>

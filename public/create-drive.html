@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Alliance University | Create Drive – CAN ATS Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<link rel="icon" href="images/Alliance_University_Icon.svg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+:root {
+  --white:#ffffff; --surface:#ffffff; --surface-alt:#f8f2ee;
+  --text:#1d1d1f; --text-secondary:#6b7280;
+  --border:#e2e8f0; --border-light:#f1f5f9;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:0 10px 30px rgba(0,0,0,0.1);
+  --radius-sm:6px; --radius:8px; --radius-md:10px; --radius-lg:10px; --radius-xl:14px;
+  --navbar-height:56px; --sidebar-width:220px;
+  --blue:rgb(0,125,251); --blue-hover:rgb(1,106,211);
+  --blue-light:#eff6ff; --blue-shadow:rgba(0,125,251,0.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:13px;scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:#f8fafc;color:var(--text);min-height:100vh;font-size:13px;line-height:1.5;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
+.navbar{position:fixed;top:0;left:0;right:0;height:var(--navbar-height);background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 20px;}
+.navbar-logo{display:flex;align-items:center;gap:10px;}
+.navbar-logo img{height:34px;width:auto;cursor:pointer;background:#e5e7eb;border-radius:4px;min-width:100px;}
+.nav-actions{display:flex;align-items:center;gap:8px;}
+.icon-btn{width:32px;height:32px;border:1px solid var(--border);border-radius:7px;background:white;display:grid;place-items:center;color:var(--text-secondary);cursor:pointer;font-size:12.5px;transition:0.15s;}
+.icon-btn:hover{background:#f8f2ee;color:#374151;}
+.profile{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:8px;cursor:pointer;transition:0.15s;}
+.profile:hover{background:#f9fafb;}
+.avatar-circle{width:28px;height:28px;border-radius:50%;background:#e5e7eb;display:grid;place-items:center;font-size:11px;font-weight:600;color:#6b7280;flex-shrink:0;}
+.profile-info strong{display:block;font-size:12px;font-weight:600;line-height:1.3;}
+.profile-info span{display:block;font-size:10.5px;color:var(--text-secondary);}
+.sidebar{position:fixed;top:var(--navbar-height);left:0;width:var(--sidebar-width);height:calc(100vh - var(--navbar-height));background:white;border-right:1px solid var(--border);padding:10px 8px;overflow-y:auto;z-index:100;display:flex;flex-direction:column;}
+.sidebar-menu{list-style:none;}
+.sidebar-menu li{margin-bottom:2px;}
+.sidebar-menu a{display:flex;align-items:center;gap:9px;text-decoration:none;color:#374151;padding:7px 10px;border-radius:7px;font-weight:500;font-size:12.5px;transition:0.15s;cursor:pointer;}
+.sidebar-menu a i{width:15px;text-align:center;font-size:12px;color:var(--blue);flex-shrink:0;}
+.sidebar-menu a:hover{background:var(--blue-light);color:var(--blue);}
+.sidebar-menu a.active{background:var(--blue);color:white;box-shadow:0 2px 8px var(--blue-shadow);}
+.sidebar-menu a.active i{color:white;}
+.main{margin-left:var(--sidebar-width);padding-top:var(--navbar-height);min-height:100vh;display:flex;flex-direction:column;width:calc(100% - var(--sidebar-width));}
+.main-body{flex:1;padding:24px 24px 0;}
+.page-header{margin-bottom:18px;}
+.page-header h1{font-size:15px;font-weight:600;margin-bottom:3px;color:var(--blue);}
+.page-header p{font-size:12px;color:var(--text-secondary);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);}
+.form-wrap{max-width:800px;}
+.form-section{padding:20px 22px;border-bottom:1px solid var(--border-light);}
+.form-section:last-of-type{border-bottom:none;}
+.form-section-title{font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+.form-section-title i{color:var(--blue);font-size:12px;}
+.logo-upload{display:flex;align-items:center;gap:14px;border:1.5px dashed var(--border);border-radius:var(--radius-md);padding:14px 16px;cursor:pointer;transition:0.15s;background:#fafafa;}
+.logo-upload:hover{border-color:var(--blue);background:var(--blue-light);}
+.logo-icon{width:44px;height:44px;border-radius:8px;background:#f1f5f9;border:1px solid var(--border);display:grid;place-items:center;font-size:18px;color:var(--text-secondary);flex-shrink:0;overflow:hidden;}
+.logo-icon img{width:100%;height:100%;object-fit:contain;}
+.logo-text h4{font-size:12.5px;font-weight:600;margin-bottom:2px;}
+.logo-text p{font-size:11px;color:var(--text-secondary);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.span2{grid-column:span 2;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+label{font-size:12px;font-weight:500;color:var(--text);}
+input[type=text],input[type=number],input[type=email],input[type=date],textarea{border:1px solid var(--border);border-radius:var(--radius);padding:7px 11px;font-family:'Poppins',sans-serif;font-size:12.5px;color:var(--text);background:white;outline:none;transition:0.15s;width:100%;}
+input:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,125,251,0.1);}
+textarea{min-height:80px;resize:vertical;line-height:1.55;}
+.form-hint{font-size:11px;color:#9ca3af;}
+.multi-select-wrap{display:flex;flex-direction:column;gap:6px;}
+.toggle-all-btn{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:var(--blue);cursor:pointer;padding:4px 9px;border:1px solid var(--blue);border-radius:5px;background:white;font-family:'Poppins',sans-serif;transition:0.15s;align-self:flex-start;}
+.toggle-all-btn:hover{background:var(--blue-light);}
+.toggle-all-btn.selected{background:var(--blue);color:white;}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:6px;}
+.checkbox-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:#f9fafb;font-size:11.5px;font-weight:500;color:#374151;cursor:pointer;transition:0.15s;user-select:none;}
+.checkbox-chip:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light);}
+.checkbox-chip.active{border-color:var(--blue);background:var(--blue);color:white;}
+.eligibility-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.roles-container{display:flex;flex-direction:column;gap:16px;}
+.role-card{border:1px solid var(--border);border-radius:var(--radius-lg);background:#fafcff;overflow:hidden;transition:box-shadow 0.2s;}
+.role-card:hover{box-shadow:var(--shadow-md);}
+.role-card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:white;border-bottom:1px solid var(--border-light);cursor:pointer;}
+.role-card-header-left{display:flex;align-items:center;gap:10px;}
+.role-number{width:24px;height:24px;border-radius:50%;background:var(--blue);color:white;display:grid;place-items:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.role-title{font-size:13px;font-weight:600;color:var(--text);}
+.role-subtitle{font-size:11px;color:var(--text-secondary);margin-top:1px;}
+.role-card-actions{display:flex;align-items:center;gap:6px;}
+.role-action-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:white;display:grid;place-items:center;font-size:11px;cursor:pointer;transition:0.15s;color:var(--text-secondary);}
+.role-action-btn:hover{background:#fee2e2;border-color:#fca5a5;color:#dc2626;}
+.role-action-btn.collapse-btn:hover{background:var(--blue-light);border-color:var(--blue);color:var(--blue);}
+.role-card-body{padding:16px;}
+.role-card-body.collapsed{display:none;}
+.add-role-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border:1.5px dashed var(--blue);border-radius:var(--radius-lg);background:var(--blue-light);color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;transition:0.15s;font-family:'Poppins',sans-serif;width:100%;}
+.add-role-btn:hover{background:#dbeafe;border-color:var(--blue-hover);}
+.form-actions{padding:16px 22px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--border-light);background:#fafafa;border-radius:0 0 var(--radius-lg) var(--radius-lg);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:500;font-size:12.5px;transition:0.15s;text-decoration:none;border-radius:7px;padding:7px 16px;border:none;white-space:nowrap;}
+.btn-primary{background:var(--blue);color:white;}
+.btn-primary:hover{background:var(--blue-hover);transform:translateY(-1px);}
+.btn-primary:disabled{background:#93c5fd;cursor:not-allowed;transform:none;}
+.btn-secondary{background:white;color:var(--text);border:1px solid var(--border);}
+.btn-secondary:hover{background:#f9fafb;}
+.footer{background:white;border-top:1px solid var(--border);width:100%;margin-top:auto;}
+.footer-inner{padding:12px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;color:var(--text-secondary);font-size:11.5px;}
+.toast-wrap{position:fixed;top:80px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast{background:#1d1d1f;color:white;border-radius:var(--radius-md);padding:10px 14px;font-size:12.5px;display:flex;align-items:center;gap:9px;box-shadow:var(--shadow-lg);min-width:220px;animation:slideUp .25s ease;}
+.toast.success{background:#16a34a;}
+.toast.error{background:#dc2626;}
+.toast.warn{background:#d97706;}
+@keyframes slideUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+.upload-progress{display:none;margin-top:8px;background:#e5e7eb;border-radius:99px;height:4px;overflow:hidden;}
+.upload-progress-bar{height:100%;background:var(--blue);border-radius:99px;transition:width 0.3s;width:0%;}
+.logo-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;margin-top:6px;padding:3px 8px;border-radius:99px;}
+.logo-status.ok{background:#dcfce7;color:#16a34a;}
+.logo-status.warn{background:#fef9c3;color:#ca8a04;}
+.logo-status.err{background:#fee2e2;color:#dc2626;}
+
+/* Storage setup banner */
+.storage-notice{background:#fefce8;border:1px solid #fde047;border-radius:var(--radius-md);padding:10px 14px;font-size:11.5px;color:#854d0e;display:none;margin-top:8px;line-height:1.6;}
+.storage-notice strong{color:#713f12;}
+.storage-notice code{background:#fef08a;padding:1px 5px;border-radius:3px;font-size:11px;}
+
+@media(max-width:900px){.sidebar{display:none;}.main{margin-left:0;width:100%;}}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr;}.span2{grid-column:auto;}.eligibility-grid{grid-template-columns:1fr 1fr;}.main-body{padding:14px 14px 0;}}
+@media(max-width:440px){.eligibility-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="navbar-logo">
+    <img class="navbar-logo-img" src="images/au_logo.png" alt="Alliance University Logo" onerror="this.style.display='none'"/>
+  </div>
+  <div class="nav-actions">
+    <button class="icon-btn" title="Help"><i class="fa-regular fa-circle-question"></i></button>
+    <div class="profile">
+      <div class="avatar-circle">CT</div>
+      <div class="profile-info">
+        <strong>CAN Team</strong>
+        <span>Placement Officer</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<aside class="sidebar">
+  <ul class="sidebar-menu">
+    <li><a href="index.html"><i class="fa-solid fa-house"></i>Home</a></li>
+    <li><a href="create-drive.html" class="active"><i class="fa-solid fa-plus-circle"></i>Create Drive</a></li>
+    <li><a href="recent-drives.html"><i class="fa-solid fa-briefcase"></i>Recent Drives</a></li>
+    <li><a href="candidates.html"><i class="fa-solid fa-users"></i>Candidates</a></li>
+    <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+    <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+  </ul>
+</aside>
+
+<main class="main">
+  <div class="main-body">
+    <div class="page-header">
+      <h1>Create a New Drive</h1>
+      <p>Set up a new recruitment drive with multiple roles and AI shortlisting.</p>
+    </div>
+
+    <div class="card form-wrap" id="drive-form-card">
+
+      <div class="form-section">
+        <div class="form-section-title">
+          <i class="fa-solid fa-building"></i> Company Information
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <label style="margin-bottom:6px;display:block;">Company Logo</label>
+          <div class="logo-upload" id="logo-box" onclick="document.getElementById('photoInput').click()">
+            <div class="logo-icon" id="logo-icon-wrap">
+              <i class="fa-regular fa-image"></i>
+            </div>
+            <div class="logo-text">
+              <h4 id="logo-label">Upload Company Logo</h4>
+              <p>JPG, PNG or SVG · Max 2 MB · Click to browse</p>
+            </div>
+          </div>
+          <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(this)"/>
+          <div id="logo-status-wrap"></div>
+
+          <!-- shown if storage bucket is missing -->
+          <div class="storage-notice" id="storage-notice">
+            <strong>⚠️ Supabase Storage not set up.</strong> Logo will be stored as base64 in the database instead (works fine, images may load slightly slower).<br/>
+            To enable proper storage: go to <strong>Supabase → Storage → New bucket</strong>, name it <code>drive-assets</code>, toggle <strong>Public ON</strong>, then run in SQL Editor:<br/>
+            <code>CREATE POLICY "Public read" ON storage.objects FOR SELECT USING (bucket_id = 'drive-assets');</code>
+          </div>
+
+          <div class="upload-progress" id="logo-progress">
+            <div class="upload-progress-bar" id="logo-progress-bar"></div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group span2">
+            <label for="company">Company Name <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="company" placeholder="e.g., Google"/>
+          </div>
+          <div class="form-group span2">
+            <label for="drive-location">Drive Location <span style="color:#ef4444;">*</span></label>
+            <input type="text" id="drive-location" placeholder="e.g., Bangalore / Remote"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section" id="roles-section">
+        <div class="form-section-title">
+          <i class="fa-solid fa-layer-group"></i> Roles
+          <span id="role-count-badge" style="margin-left:auto;background:var(--blue);color:white;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:99px;">1 role</span>
+        </div>
+        <div class="roles-container" id="roles-container"></div>
+        <div style="margin-top:14px;">
+          <button type="button" class="add-role-btn" id="add-role-btn">
+            <i class="fa-solid fa-plus"></i> Add Another Role
+          </button>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="index.html" class="btn btn-secondary">Cancel</a>
+        <button class="btn btn-primary" id="submit-btn">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Create Drive
+        </button>
+      </div>
+    </div>
+
+    <div style="height:24px;"></div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>© 2026 Alliance University – CAN Department ATS Portal</span>
+      <span>Built for Intelligent Campus Recruitment</span>
+    </div>
+  </footer>
+</main>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+/* ══════════════════════════════════════════
+   SUPABASE
+══════════════════════════════════════════ */
+const SUPABASE_URL  = "https://zaqfpoobhvvyndtazyxw.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphcWZwb29iaHZ2eW5kdGF6eXh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzUwMzUsImV4cCI6MjA5MzkxMTAzNX0.nfGqIZpcp_Vl3t0rJX84qB4QhiIyhC-q9GfAcboV2hI";
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+const BUCKET = 'drive-assets';
+
+/* ── Storage availability flag (checked on first upload attempt) ── */
+let storageAvailable = null; // null=unknown, true=ok, false=unavailable
+
+/* ── Logo state ── */
+let logoFile       = null;
+let logoBase64     = null;  // fallback when storage unavailable
+
+/* ───────── CONSTANTS ───────── */
+const DEPARTMENTS = [
+  { value:'CSE',   label:'Computer Science & Engineering' },
+  { value:'IT',    label:'Information Science & Engineering' },
+  { value:'EC',    label:'Electronics & Communication Engineering' },
+  { value:'EEE',   label:'Electrical & Electronics Engineering' },
+  { value:'ME',    label:'Mechanical Engineering' },
+  { value:'CE',    label:'Civil Engineering' },
+  { value:'MBA',   label:'Business Administration (MBA)' },
+  { value:'BCOM',  label:'Commerce (B.Com)' },
+  { value:'LLB',   label:'Law (LLB)' },
+  { value:'Other', label:'Other' },
+];
+
+const SPECIALIZATIONS = [
+  { value:'AI',      label:'Artificial Intelligence & Machine Learning' },
+  { value:'DA',      label:'Data Science & Analytics' },
+  { value:'CS',      label:'Cyber Security' },
+  { value:'Cloud',   label:'Cloud Computing & DevOps' },
+  { value:'IoT',     label:'Internet of Things (IoT)' },
+  { value:'FS',      label:'Full Stack Development' },
+  { value:'VLSI',    label:'VLSI & Embedded Systems' },
+  { value:'General', label:'General / No Specialization' },
+];
+let roleCounter = 0;
+
+/* ══════════════════════════════════════════
+   CHECK STORAGE ON PAGE LOAD
+   (probe silently so we know ahead of time)
+══════════════════════════════════════════ */
+async function probeStorage() {
+  try {
+    const { error } = await db.storage.from(BUCKET).list('company-logos', { limit: 1 });
+    storageAvailable = !error;
+  } catch {
+    storageAvailable = false;
+  }
+}
+probeStorage(); // fire and forget
+
+/* ══════════════════════════════════════════
+   LOGO PREVIEW + BASE64
+══════════════════════════════════════════ */
+function previewPhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  if (file.size > 2 * 1024 * 1024) {
+    showToast('Logo must be under 2 MB.', 'error');
+    input.value = '';
+    return;
+  }
+  logoFile = file;
+
+  /* Show preview */
+  const objectUrl = URL.createObjectURL(file);
+  document.getElementById('logo-icon-wrap').innerHTML = `<img src="${objectUrl}" alt="logo"/>`;
+  document.getElementById('logo-label').textContent   = file.name;
+
+  /* Always read as base64 for the DB fallback */
+  const reader = new FileReader();
+  reader.onload = e => {
+    logoBase64 = e.target.result; // data:image/png;base64,....
+    setLogoStatus('warn', '<i class="fa-solid fa-clock"></i> Logo ready — will upload when drive is saved');
+  };
+  reader.readAsDataURL(file);
+}
+
+function setLogoStatus(type, html) {
+  document.getElementById('logo-status-wrap').innerHTML =
+    `<div class="logo-status ${type}">${html}</div>`;
+}
+
+/* ══════════════════════════════════════════
+   UPLOAD TO SUPABASE STORAGE
+   Returns public URL or throws
+══════════════════════════════════════════ */
+async function uploadToStorage(file, driveId) {
+  const ext  = file.name.split('.').pop().toLowerCase();
+  const path = `company-logos/${driveId}_${Date.now()}.${ext}`;
+
+  const prog = document.getElementById('logo-progress');
+  const bar  = document.getElementById('logo-progress-bar');
+  prog.style.display = 'block';
+  bar.style.width    = '40%';
+
+  const { error: upErr } = await db.storage
+    .from(BUCKET)
+    .upload(path, file, { upsert: true, contentType: file.type });
+
+  if (upErr) {
+    prog.style.display = 'none';
+    throw new Error(upErr.message);
+  }
+
+  bar.style.width = '100%';
+  setTimeout(() => { prog.style.display = 'none'; bar.style.width = '0'; }, 600);
+
+  const { data: urlData } = db.storage.from(BUCKET).getPublicUrl(path);
+  if (!urlData?.publicUrl) throw new Error('Could not get public URL');
+  return urlData.publicUrl;
+}
+
+/* ══════════════════════════════════════════
+   CHIP MULTI-SELECT
+══════════════════════════════════════════ */
+function buildChipSelect(containerId, items, prefix) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+
+  const allBtn = document.createElement('button');
+  allBtn.type      = 'button';
+  allBtn.className = 'toggle-all-btn';
+  allBtn.innerHTML = '<i class="fa-solid fa-check-double"></i> All';
+  allBtn.addEventListener('click', () => toggleAll(prefix, items, allBtn));
+  container.appendChild(allBtn);
+
+  const chipRow = document.createElement('div');
+  chipRow.className = 'checkbox-group';
+  chipRow.id = `${prefix}-chips`;
+  items.forEach(item => {
+    const chip = document.createElement('span');
+    chip.className     = 'checkbox-chip';
+    chip.dataset.value = item.value;
+    chip.textContent   = item.label;
+    chip.addEventListener('click', () => toggleChip(chip, prefix, items, allBtn));
+    chipRow.appendChild(chip);
+  });
+  container.appendChild(chipRow);
+}
+
+function toggleChip(chip, prefix, items, allBtn) {
+  chip.classList.toggle('active');
+  const active = document.querySelectorAll(`#${prefix}-chips .checkbox-chip.active`).length;
+  allBtn.classList.toggle('selected', active === items.length);
+}
+function toggleAll(prefix, items, allBtn) {
+  const on = !allBtn.classList.contains('selected');
+  document.querySelectorAll(`#${prefix}-chips .checkbox-chip`).forEach(c => c.classList.toggle('active', on));
+  allBtn.classList.toggle('selected', on);
+}
+function getSelectedChips(prefix) {
+  return Array.from(document.querySelectorAll(`#${prefix}-chips .checkbox-chip.active`)).map(c => c.dataset.value);
+}
+
+/* ══════════════════════════════════════════
+   ROLE CARD
+══════════════════════════════════════════ */
+function buildRoleCard(id) {
+  const card = document.createElement('div');
+  card.className = 'role-card';
+  card.id        = `role-card-${id}`;
+  card.innerHTML = `
+    <div class="role-card-header" id="role-header-${id}">
+      <div class="role-card-header-left">
+        <div class="role-number" id="role-num-${id}">1</div>
+        <div>
+          <div class="role-title" id="role-title-preview-${id}">New Role</div>
+          <div class="role-subtitle" id="role-ctc-preview-${id}">CTC / Stipend not set</div>
+        </div>
+      </div>
+      <div class="role-card-actions">
+        <button type="button" class="role-action-btn collapse-btn" id="role-collapse-btn-${id}">
+          <i class="fa-solid fa-chevron-up" id="role-chevron-${id}"></i>
+        </button>
+        <button type="button" class="role-action-btn" id="role-remove-btn-${id}">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+    <div class="role-card-body" id="role-body-${id}">
+      <div class="form-grid" style="margin-bottom:14px;">
+        <div class="form-group">
+          <label>Job Role / Position <span style="color:#ef4444;">*</span></label>
+          <input type="text" id="role-position-${id}" placeholder="e.g., Software Engineer"/>
+        </div>
+        <div class="form-group">
+          <label>CTC / Stipend</label>
+          <input type="text" id="role-ctc-${id}" placeholder="e.g., 12 LPA"/>
+        </div>
+        <div class="form-group span2">
+          <label>Job Description</label>
+          <textarea id="role-desc-${id}" placeholder="Describe responsibilities, skills, work environment…"></textarea>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:14px;">
+        <label>Eligible Departments</label>
+        <div class="multi-select-wrap" id="dept-wrap-${id}"></div>
+      </div>
+      <div class="form-group" style="margin-bottom:14px;">
+        <label>Specializations</label>
+        <div class="multi-select-wrap" id="spec-wrap-${id}"></div>
+      </div>
+      <div style="margin-bottom:4px;">
+        <div class="form-section-title" style="margin-bottom:10px;font-size:12px;">
+          <i class="fa-solid fa-sliders" style="color:var(--blue);font-size:11px;"></i> Eligibility Criteria
+        </div>
+        <div class="eligibility-grid">
+          <div class="form-group">
+            <label>Minimum CGPA</label>
+            <input type="number" id="role-cgpa-${id}" placeholder="e.g., 7.5" step="0.1" min="0" max="10"/>
+          </div>
+          <div class="form-group">
+            <label>Minimum Percentage</label>
+            <input type="number" id="role-pct-${id}" placeholder="e.g., 70" step="0.1" min="0" max="100"/>
+          </div>
+          <div class="form-group">
+            <label>Max Active Backlogs</label>
+            <input type="number" id="role-backlogs-${id}" placeholder="e.g., 0" min="0"/>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <div class="form-section-title" style="margin-bottom:10px;font-size:12px;">
+          <i class="fa-solid fa-robot" style="color:var(--blue);font-size:11px;"></i> AI Shortlisting
+        </div>
+        <div class="form-group" style="max-width:260px;">
+          <label>Students to Shortlist</label>
+          <input type="number" id="role-shortlist-${id}" placeholder="e.g., 50" min="1"/>
+          <span class="form-hint">AI ranks eligible students and picks top N.</span>
+        </div>
+      </div>
+    </div>`;
+  return card;
+}
+
+function addRole() {
+  roleCounter++;
+  const id = roleCounter;
+  const container = document.getElementById('roles-container');
+  const card = buildRoleCard(id);
+  container.appendChild(card);
+
+  buildChipSelect(`dept-wrap-${id}`, DEPARTMENTS,     `dept-${id}`);
+  buildChipSelect(`spec-wrap-${id}`, SPECIALIZATIONS, `spec-${id}`);
+
+  document.getElementById(`role-header-${id}`).addEventListener('click', e => {
+    if (e.target.closest('.role-card-actions')) return;
+    toggleRoleCollapse(id);
+  });
+  document.getElementById(`role-collapse-btn-${id}`).addEventListener('click', e => { e.stopPropagation(); toggleRoleCollapse(id); });
+  document.getElementById(`role-remove-btn-${id}`).addEventListener('click', e => { e.stopPropagation(); removeRole(id); });
+  document.getElementById(`role-position-${id}`).addEventListener('input', () => updateRolePreview(id));
+  document.getElementById(`role-ctc-${id}`).addEventListener('input', () => updateRolePreview(id));
+
+  updateRoleNumbers();
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function removeRole(id) {
+  if (document.querySelectorAll('.role-card').length === 1) {
+    showToast('At least one role is required.', 'error'); return;
+  }
+  const card = document.getElementById(`role-card-${id}`);
+  card.style.transition = 'opacity 0.2s,transform 0.2s';
+  card.style.opacity = '0'; card.style.transform = 'scale(0.97)';
+  setTimeout(() => { card.remove(); updateRoleNumbers(); }, 200);
+}
+
+function toggleRoleCollapse(id) {
+  const body = document.getElementById(`role-body-${id}`);
+  const chev = document.getElementById(`role-chevron-${id}`);
+  body.classList.toggle('collapsed');
+  chev.className = body.classList.contains('collapsed') ? 'fa-solid fa-chevron-down' : 'fa-solid fa-chevron-up';
+}
+
+function updateRolePreview(id) {
+  const pos = document.getElementById(`role-position-${id}`).value.trim();
+  const ctc = document.getElementById(`role-ctc-${id}`).value.trim();
+  document.getElementById(`role-title-preview-${id}`).textContent = pos || 'New Role';
+  document.getElementById(`role-ctc-preview-${id}`).textContent   = ctc || 'CTC / Stipend not set';
+}
+
+function updateRoleNumbers() {
+  document.querySelectorAll('.role-card').forEach((c, i) => {
+    const id = c.id.replace('role-card-', '');
+    const el = document.getElementById(`role-num-${id}`);
+    if (el) el.textContent = i + 1;
+  });
+  const cards = document.querySelectorAll('.role-card').length;
+  document.getElementById('role-count-badge').textContent = `${cards} role${cards > 1 ? 's' : ''}`;
+}
+
+/* ══════════════════════════════════════════
+   COLLECT ROLES
+══════════════════════════════════════════ */
+function collectRoles() {
+  const roles = [];
+  for (const card of document.querySelectorAll('.role-card')) {
+    const id       = card.id.replace('role-card-', '');
+    const position = document.getElementById(`role-position-${id}`).value.trim();
+    if (!position) {
+      showToast(`Role ${id}: "Job Role / Position" is required.`, 'error');
+      return null;
+    }
+    const backlogsRaw = document.getElementById(`role-backlogs-${id}`).value;
+    roles.push({
+      position,
+      ctc:             document.getElementById(`role-ctc-${id}`).value.trim()       || null,
+      description:     document.getElementById(`role-desc-${id}`).value.trim()      || null,
+      departments:     getSelectedChips(`dept-${id}`),
+      specializations: getSelectedChips(`spec-${id}`),
+      cgpa_min:        parseFloat(document.getElementById(`role-cgpa-${id}`).value) || 0,
+      percentage_min:  parseFloat(document.getElementById(`role-pct-${id}`).value)  || 0,
+      backlogs_max:    backlogsRaw !== '' ? parseInt(backlogsRaw) : 99,
+      shortlist_count: parseInt(document.getElementById(`role-shortlist-${id}`).value) || 50,
+    });
+  }
+  return roles;
+}
+
+/* ══════════════════════════════════════════
+   SUBMIT
+══════════════════════════════════════════ */
+async function submitDrive() {
+  const company  = document.getElementById('company').value.trim();
+  const location = document.getElementById('drive-location').value.trim();
+  if (!company)  { showToast('Company name is required.',    'error'); return; }
+  if (!location) { showToast('Drive location is required.', 'error'); return; }
+
+  const roles = collectRoles();
+  if (!roles) return;
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving…';
+
+  try {
+    /* ── 1. Insert drive ── */
+    const { data: driveData, error: driveErr } = await db
+      .from('drives')
+      .insert({ company_name: company, location, status: 'open', logo_url: null })
+      .select('id, company_name, location, status, created_at, logo_url')
+      .single();
+
+    if (driveErr) throw driveErr;
+    const driveId = driveData.id;
+
+    /* ── 2. Handle logo ── */
+    let logoUrl = null;
+    if (logoFile) {
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading logo…';
+
+      /* Try Supabase Storage first */
+      if (storageAvailable === true) {
+        try {
+          logoUrl = await uploadToStorage(logoFile, driveId);
+          setLogoStatus('ok', '<i class="fa-solid fa-check-circle"></i> Logo uploaded to storage');
+        } catch (storErr) {
+          console.warn('Storage upload failed, falling back to base64:', storErr.message);
+          storageAvailable = false;
+        }
+      }
+
+      /* Fallback: store base64 directly in logo_url column */
+      if (!logoUrl && logoBase64) {
+        logoUrl = logoBase64; // data:image/png;base64,...
+        document.getElementById('storage-notice').style.display = 'block';
+        setLogoStatus('warn', '<i class="fa-solid fa-info-circle"></i> Logo saved as base64 (storage bucket not configured)');
+      }
+
+      /* Save logo_url to DB regardless of which method worked */
+      if (logoUrl) {
+        const { error: updateErr } = await db
+          .from('drives')
+          .update({ logo_url: logoUrl })
+          .eq('id', driveId);
+        if (updateErr) console.warn('logo_url update failed:', updateErr.message);
+      }
+    }
+
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving roles…';
+
+    /* ── 3. Insert roles ── */
+    const roleRows = roles.map(r => ({ ...r, drive_id: driveId }));
+    const { error: rolesErr } = await db.from('drive_roles').insert(roleRows);
+    if (rolesErr) throw rolesErr;
+
+    /* ── 4. Cache locally ── */
+    try {
+      const cached = JSON.parse(localStorage.getItem('can_drives') || '[]');
+      cached.unshift({
+        id: driveId, company_name: company, location,
+        logo_url: logoUrl, roles, status: 'open',
+        created_at: driveData.created_at || new Date().toISOString(),
+      });
+      localStorage.setItem('can_drives', JSON.stringify(cached));
+    } catch (_) {}
+
+    showToast(`Drive for ${company} created successfully!`, 'success');
+    setTimeout(() => { window.location.href = 'recent-drives.html'; }, 1400);
+
+  } catch (err) {
+    console.error('Drive creation error:', err);
+    showToast('Error: ' + (err.message || 'Could not save drive.'), 'error');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Create Drive';
+  }
+}
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+function showToast(msg, type = '') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  const icons = { success:'fa-check-circle', error:'fa-circle-xmark', warn:'fa-triangle-exclamation', '':'fa-info-circle' };
+  el.innerHTML = `<i class="fa-solid ${icons[type] || icons['']}"></i>${msg}`;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+/* ══════════════════════════════════════════
+   WIRE UP & INIT
+══════════════════════════════════════════ */
+document.getElementById('add-role-btn').addEventListener('click', addRole);
+document.getElementById('submit-btn').addEventListener('click', submitDrive);
+const navLogo = document.querySelector('.navbar-logo-img');
+if (navLogo) navLogo.addEventListener('click', () => { window.location.href = 'index.html'; });
+
+addRole(); // start with one role
+</script>
+</body>
+</html>

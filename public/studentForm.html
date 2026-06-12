@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Alliance University — Student Registration Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<style>
+:root {
+  --blue:rgb(0,125,251);
+  --blue-dark:rgb(1,106,211);
+  --blue-mid:#0070e0;
+  --blue-bg:#eff6ff;
+  --blue-border:#dbeafe;
+  --blue-shadow:rgba(0,125,251,0.22);
+  --bg:#f4f7fb;
+  --surface:#ffffff;
+  --white:#ffffff;
+  --border:#e2e8f0;
+  --border-light:#f1f5f9;
+  --text:#0f172a;
+  --text-s:#374151;
+  --text-secondary:#6b7280;
+  --text-m:#6b7280;
+  --success:#16a34a;
+  --success-bg:#dcfce7;
+  --error:#dc2626;
+  --error-bg:#fef2f2;
+  --r:8px; --r-lg:12px; --r-xl:16px;
+  --radius-lg:12px;
+  --font:'DM Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg:0 16px 48px rgba(0,0,0,.14);
+  --t:all 0.18s ease;
+  --navbar-h:58px;
+  --prog-h:76px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;}
+
+/* ══ NAVBAR ══ */
+.navbar{
+  position:fixed;top:0;left:0;right:0;height:var(--navbar-h);
+  background:rgba(255,255,255,.97);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;z-index:300;
+  box-shadow:0 1px 0 rgba(0,0,0,.04),var(--shadow-sm);
+}
+.navbar-logo{display:flex;align-items:center;gap:11px;}
+.logo-shield{
+  width:36px;height:36px;
+  background:linear-gradient(135deg,var(--blue) 0%,#0ea5e9 100%);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 12px var(--blue-shadow);
+  position:relative;overflow:hidden;
+}
+.logo-shield::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.2) 0%,transparent 60%);
+}
+.logo-shield i{color:#fff;font-size:16px;position:relative;z-index:1;}
+.navbar-text-wrap{display:flex;flex-direction:column;line-height:1;}
+.navbar-name{font-size:13px;font-weight:800;color:var(--text);letter-spacing:-.01em;}
+.navbar-sub{font-size:10px;font-weight:500;color:var(--text-m);letter-spacing:.03em;}
+.nav-right-wrap{display:flex;align-items:center;gap:8px;}
+.nav-live{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--text-m);letter-spacing:.06em;padding:5px 10px;background:var(--bg);border:1px solid var(--border);border-radius:99px;}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:blink 2s ease infinite;}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{opacity:.4;box-shadow:0 0 0 3px rgba(34,197,94,.1)}}
+
+/* ══ PROGRESS ══ */
+.prog-wrap{
+  position:fixed;top:var(--navbar-h);left:0;width:100%;height:var(--prog-h);
+  background:#fff;border-bottom:1px solid var(--border);
+  display:flex;justify-content:center;align-items:center;
+  z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+.prog-track{
+  position:relative;width:min(860px,92vw);
+  display:flex;justify-content:space-between;align-items:flex-start;
+}
+.prog-line{position:absolute;top:15px;left:15px;right:15px;height:2px;background:#e2e8f0;border-radius:999px;z-index:0;}
+.prog-fill{position:absolute;top:15px;left:15px;height:2px;width:0%;background:linear-gradient(90deg,var(--blue),#38bdf8);border-radius:999px;z-index:1;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.pstep{position:relative;z-index:2;width:30px;display:flex;flex-direction:column;align-items:center;text-align:center;flex-shrink:0;}
+.pnum{width:30px;height:30px;border-radius:50%;background:#fff;border:2px solid #e2e8f0;color:#9ca3af;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .3s cubic-bezier(.34,1.56,.64,1);}
+.plabel{margin-top:8px;font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;}
+.pstep.active .pnum{background:var(--blue);border-color:var(--blue);color:#fff;transform:scale(1.15);box-shadow:0 0 0 5px rgba(0,125,251,.12);}
+.pstep.active .plabel{color:var(--blue);font-weight:800;}
+.pstep.done .pnum{background:var(--blue);border-color:var(--blue);color:#fff;}
+.pstep.done .plabel{color:var(--text-m);}
+
+/* ══ SCROLL AREA ══ */
+.scroll-area{position:fixed;top:calc(var(--navbar-h) + var(--prog-h));left:0;right:0;bottom:0;overflow-y:auto;background:var(--bg);-webkit-overflow-scrolling:touch;}
+.scroll-inner{max-width:760px;margin:0 auto;padding:28px 16px 100px;}
+.card{background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--shadow-md);overflow:hidden;border:1px solid var(--border);}
+
+/* ══ STEP ══ */
+.step{display:none;}
+.step.active{display:block;animation:fadeUp .26s cubic-bezier(.4,0,.2,1);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ SECTION HEADER ══ */
+.sec-hd{background:linear-gradient(135deg,var(--blue) 0%,#0ea5e9 100%);padding:20px 26px;display:flex;align-items:center;gap:13px;}
+.sec-ic{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;color:#fff;backdrop-filter:blur(4px);}
+.sec-hd h2{font-size:15px;font-weight:800;color:#fff;margin-bottom:2px;letter-spacing:-.01em;}
+.sec-hd p{font-size:11px;color:rgba(255,255,255,.65);font-weight:400;}
+
+/* ══ FORM BODY ══ */
+.fbody{padding:24px 26px 0;}
+
+/* ══ DIVIDER ══ */
+.dlabel{display:flex;align-items:center;gap:8px;margin:22px 0 14px;}
+.dlabel::before,.dlabel::after{content:'';flex:1;height:1px;background:var(--border-light);}
+.dlabel span{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--text-m);padding:0 6px;background:#fff;border-radius:4px;border:1px solid var(--border);}
+
+/* ══ GRID ══ */
+.fg{display:grid;gap:14px;}
+.g2{grid-template-columns:1fr 1fr;}
+.g3{grid-template-columns:1fr 1fr 1fr;}
+.g1{grid-template-columns:1fr;}
+.sp2{grid-column:span 2;}
+.sp3{grid-column:span 3;}
+
+/* ══ FIELD ══ */
+.fld{display:flex;flex-direction:column;gap:5px;}
+.fld label{font-size:11.5px;font-weight:700;color:var(--text-s);display:flex;align-items:center;gap:3px;}
+.fld label .req{color:#dc2626;font-size:14px;line-height:1;font-weight:900;}
+.fld input,.fld select,.fld textarea{
+  width:100%;padding:9px 13px;
+  background:var(--bg);border:1.5px solid var(--border);
+  border-radius:var(--r);font-family:var(--font);font-size:12.5px;
+  color:var(--text);outline:none;transition:var(--t);
+  -webkit-appearance:none;appearance:none;
+}
+.fld input:focus,.fld select:focus,.fld textarea:focus{
+  border-color:var(--blue);background:#fff;
+  box-shadow:0 0 0 3px rgba(0,125,251,.1);
+}
+.fld input::placeholder,.fld textarea::placeholder{color:#c0c9d5;font-size:12px;}
+.fld select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;cursor:pointer;
+}
+.fld textarea{resize:vertical;min-height:72px;line-height:1.6;}
+.fld .hint{font-size:10.5px;color:var(--text-m);}
+.fld .err{font-size:10.5px;color:var(--error);display:none;}
+.fld.invalid input,.fld.invalid select,.fld.invalid textarea{border-color:var(--error)!important;background:var(--error-bg)!important;}
+.fld.invalid .err{display:block;}
+.fld.valid input,.fld.valid select{border-color:#22c55e;}
+
+/* ══ PHOTO UPLOAD ══ */
+.photo-box{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:var(--r-lg);border:1.5px dashed var(--border);background:var(--bg);cursor:pointer;transition:var(--t);}
+.photo-box:hover{border-color:var(--blue);background:var(--blue-bg);}
+.photo-av{width:64px;height:64px;border-radius:50%;background:#e2e8f0;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.photo-av img{width:100%;height:100%;object-fit:cover;}
+.photo-info h4{font-size:12.5px;font-weight:700;color:var(--blue);margin-bottom:2px;}
+.photo-info p{font-size:11px;color:var(--text-m);}
+.photo-status{display:none;align-items:center;gap:5px;margin-top:4px;font-size:11px;font-weight:600;color:var(--success);background:var(--success-bg);padding:2px 9px;border-radius:99px;}
+.photo-status.show{display:inline-flex;}
+
+/* ══ RESUME BOX ══ */
+.res-box{border:1.5px dashed var(--border);border-radius:var(--r-lg);padding:28px;text-align:center;cursor:pointer;background:var(--bg);transition:var(--t);}
+.res-box:hover,.res-box.drag{border-color:var(--blue);background:var(--blue-bg);}
+.res-box .ri{font-size:32px;margin-bottom:8px;}
+.res-box h4{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:3px;}
+.res-box p{font-size:11.5px;color:var(--text-m);}
+.res-done{display:none;align-items:center;gap:10px;background:var(--success-bg);border:1px solid #86efac;border-radius:var(--r);padding:10px 14px;margin-top:10px;}
+.res-done.show{display:flex;}
+.res-done span{font-size:12.5px;font-weight:600;color:var(--success);}
+
+/* ══ PILLS ══ */
+.pills-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px;}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:1.5px solid var(--border);border-radius:99px;cursor:pointer;transition:var(--t);font-size:12px;font-weight:600;color:var(--text-s);user-select:none;background:#fff;}
+.pill:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-bg);}
+.pill.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+.pill.on::before{content:'✓ ';font-size:9px;}
+.add-custom-row{display:flex;gap:7px;margin-top:8px;}
+.add-custom-row input{flex:1;padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:12px;background:var(--bg);outline:none;transition:var(--t);}
+.add-custom-row input:focus{border-color:var(--blue);background:#fff;}
+.add-custom-row button{padding:7px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:var(--font);font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;transition:var(--t);}
+.add-custom-row button:hover{background:var(--blue-dark);}
+
+/* ══ RADIO TABS ══ */
+.rtabs{display:flex;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.rtab{flex:1;padding:8px 10px;text-align:center;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-s);background:var(--bg);border-right:1px solid var(--border);transition:var(--t);}
+.rtab:last-child{border-right:none;}
+.rtab.on{background:var(--blue);color:#fff;}
+.rtab input{display:none;}
+
+/* ══ DYNAMIC ENTRY CARDS ══ */
+.entry-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:12px;position:relative;}
+.entry-card .remove-btn{position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-m);transition:color .2s;line-height:1;padding:2px;}
+.entry-card .remove-btn:hover{color:var(--error);}
+.entry-num{font-size:10.5px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+.add-more-btn{display:flex;align-items:center;gap:7px;padding:9px 16px;border:1.5px dashed var(--border);border-radius:var(--r-lg);background:var(--bg);cursor:pointer;font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--text-m);transition:var(--t);width:100%;justify-content:center;}
+.add-more-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-bg);}
+.add-more-btn span{font-size:16px;line-height:1;}
+
+/* ══ BACKLOGS ══ */
+.backlog-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);}
+.backlog-row label{font-size:12.5px;font-weight:600;color:var(--text-s);flex:1;}
+.backlog-toggle{display:flex;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.backlog-toggle span{padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-s);background:var(--bg);border-right:1px solid var(--border);transition:var(--t);}
+.backlog-toggle span:last-child{border-right:none;}
+.backlog-toggle span.on{background:var(--blue);color:#fff;}
+
+/* ══ DECLARATION ══ */
+.decl-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;}
+.decl-box p{font-size:12px;color:var(--text-s);line-height:1.8;margin-bottom:12px;}
+.decl-chk{display:flex;align-items:center;gap:9px;cursor:pointer;font-size:12.5px;font-weight:700;color:var(--blue);}
+.decl-chk input{width:15px;height:15px;accent-color:var(--blue);cursor:pointer;}
+
+/* ══ REVIEW ══ */
+.rev-sec{margin-bottom:20px;}
+.rev-sec h4{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:10px;padding-bottom:7px;border-bottom:1.5px solid var(--blue-border);}
+.rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.rev-item{display:flex;flex-direction:column;gap:2px;}
+.rev-item .rl{font-size:9.5px;color:var(--text-m);font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+.rev-item .rv{font-size:12.5px;color:var(--text);font-weight:600;word-break:break-word;}
+
+/* ══ ALREADY REGISTERED BANNER ══ */
+.already-reg-banner{
+  display:none;
+  background:linear-gradient(135deg,#fef3c7,#fde68a);
+  border:2px solid #f59e0b;border-radius:var(--r-lg);
+  padding:14px 18px;margin-bottom:16px;
+  align-items:center;gap:12px;
+}
+.already-reg-banner.show{display:flex;}
+.already-reg-banner i{font-size:22px;color:#d97706;flex-shrink:0;}
+.already-reg-banner .arb-text h4{font-size:13px;font-weight:800;color:#92400e;margin-bottom:2px;}
+.already-reg-banner .arb-text p{font-size:11.5px;color:#a16207;line-height:1.5;}
+.arb-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.arb-btn-update{background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-family:var(--font);font-size:12px;font-weight:700;padding:7px 16px;cursor:pointer;transition:var(--t);}
+.arb-btn-update:hover{background:var(--blue-dark);}
+.arb-btn-cancel{background:#fff;color:var(--text-s);border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:12px;font-weight:700;padding:7px 16px;cursor:pointer;transition:var(--t);}
+.arb-btn-cancel:hover{border-color:var(--error);color:var(--error);}
+
+/* ══ NAV FOOTER ══ */
+.form-nav{display:flex;justify-content:space-between;align-items:center;padding:18px 26px 22px;border-top:1px solid var(--border-light);background:#fff;margin-top:22px;}
+.btn-back{background:#fff;border:1.5px solid var(--border);color:var(--text-s);font-family:var(--font);font-size:12.5px;font-weight:700;padding:9px 20px;border-radius:var(--r);cursor:pointer;transition:var(--t);}
+.btn-back:hover{border-color:var(--blue);color:var(--blue);}
+.nav-right-footer{display:flex;align-items:center;gap:12px;}
+.step-ct{font-size:10.5px;color:var(--text-m);font-weight:600;letter-spacing:.05em;}
+.btn-next{background:var(--blue);color:#fff;border:none;font-family:var(--font);font-size:13px;font-weight:700;padding:10px 24px;border-radius:var(--r);cursor:pointer;transition:var(--t);display:flex;align-items:center;gap:7px;box-shadow:0 4px 14px var(--blue-shadow);}
+.btn-next:hover{background:var(--blue-dark);transform:translateY(-1px);}
+.btn-submit{background:linear-gradient(135deg,var(--blue) 0%,#0ea5e9 100%);color:#fff;border:none;font-family:var(--font);font-size:13px;font-weight:700;padding:11px 28px;border-radius:var(--r);cursor:pointer;transition:var(--t);display:flex;align-items:center;gap:7px;box-shadow:0 4px 14px var(--blue-shadow);}
+.btn-submit:hover{transform:translateY(-1px);box-shadow:0 8px 24px var(--blue-shadow);}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* ══ LOADING OVERLAY ══ */
+.loader{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(15,23,42,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;
+  flex-direction:column;gap:0;
+}
+.loader.show{display:flex;animation:loaderFadeIn .25s ease forwards;}
+@keyframes loaderFadeIn{from{opacity:0}to{opacity:1}}
+.loading-spinner{
+  width:36px;height:36px;
+  border:3px solid rgba(255,255,255,.18);
+  border-top-color:var(--blue);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+  margin-bottom:14px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:13px;color:rgba(255,255,255,.85);font-weight:600;letter-spacing:.01em;}
+.loader-prog{width:200px;height:3px;background:rgba(255,255,255,.15);border-radius:999px;overflow:hidden;margin-top:10px;}
+.loader-prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#38bdf8);border-radius:999px;width:0%;transition:width .4s cubic-bezier(.4,0,.2,1);}
+
+/* ══ TOAST ══ */
+.toast-host{
+  position:fixed;top:68px;left:50%;transform:translateX(-50%);
+  z-index:9999;display:flex;flex-direction:column;align-items:center;
+  gap:8px;pointer-events:none;width:min(400px,92vw);
+}
+.toast-item{
+  width:100%;background:#fff;border:1px solid var(--border);
+  border-left:4px solid var(--blue);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-md);padding:12px 14px;
+  display:flex;align-items:flex-start;gap:10px;
+  pointer-events:all;
+  animation:toastIn .3s cubic-bezier(.34,1.56,.64,1) forwards;
+  position:relative;overflow:hidden;
+}
+.toast-item.error{border-left-color:#dc2626;}
+.toast-item.success{border-left-color:#16a34a;}
+.toast-item.info{border-left-color:#0ea5e9;}
+.toast-item.warn{border-left-color:#f59e0b;}
+@keyframes toastIn{from{transform:translateY(-16px) scale(0.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+@keyframes toastOut{from{opacity:1}to{transform:translateY(-12px) scale(.93);opacity:0}}
+.toast-em{font-size:18px;flex-shrink:0;}
+.toast-txt h4{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:1px;}
+.toast-txt p{font-size:11px;color:var(--text-m);line-height:1.5;}
+.toast-prog{position:absolute;bottom:0;left:0;height:2.5px;background:var(--blue);animation:shrink linear forwards;}
+.toast-item.error .toast-prog{background:#dc2626;}
+.toast-item.success .toast-prog{background:#16a34a;}
+.toast-item.info .toast-prog{background:#0ea5e9;}
+.toast-item.warn .toast-prog{background:#f59e0b;}
+@keyframes shrink{from{width:100%}to{width:0%}}
+
+/* ══ SUCCESS OVERLAY — clean & professional ══ */
+.success-overlay{
+  display:none;position:fixed;inset:0;z-index:8000;
+  background:rgba(15,23,42,.75);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  align-items:center;justify-content:center;
+}
+.success-overlay.show{display:flex;animation:overlayIn .3s ease forwards;}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+
+.success-card{
+  background:#fff;border-radius:20px;
+  max-width:420px;width:92%;
+  box-shadow:0 32px 64px rgba(0,0,0,.28),0 0 0 1px rgba(0,125,251,.12);
+  overflow:hidden;
+  animation:cardDrop .4s cubic-bezier(.34,1.46,.64,1) forwards;
+}
+@keyframes cardDrop{
+  from{transform:translateY(-32px) scale(.96);opacity:0;}
+  to{transform:translateY(0) scale(1);opacity:1;}
+}
+
+.success-top{
+  background:linear-gradient(135deg,#0052d4 0%,#0ea5e9 100%);
+  padding:30px 24px 26px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  position:relative;
+}
+.success-top::after{
+  content:'';position:absolute;bottom:-1px;left:0;right:0;height:18px;
+  background:#fff;border-radius:50% 50% 0 0/100% 100% 0 0;
+}
+.success-check{
+  width:60px;height:60px;border-radius:50%;
+  background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.success-check i{color:#fff;font-size:26px;}
+.success-top h2{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.02em;}
+.success-top p{font-size:11.5px;color:rgba(255,255,255,.75);font-weight:400;}
+
+.success-body{padding:22px 24px 24px;}
+.success-msg{font-size:13px;color:var(--text-s);line-height:1.75;margin-bottom:18px;text-align:center;}
+
+.s-meta{
+  display:flex;gap:8px;margin-bottom:20px;
+}
+.s-meta-item{
+  flex:1;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:10px 12px;text-align:center;
+}
+.s-meta-item .sv{display:block;font-size:15px;font-weight:800;color:var(--blue);margin-bottom:2px;}
+.s-meta-item .sl{font-size:9.5px;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:.07em;}
+
+.success-actions{display:flex;gap:10px;justify-content:center;}
+.btn-done{
+  background:var(--blue);color:#fff;border:none;
+  font-family:var(--font);font-size:13px;font-weight:700;
+  padding:10px 28px;border-radius:var(--r);cursor:pointer;
+  transition:var(--t);display:inline-flex;align-items:center;gap:7px;
+  box-shadow:0 4px 14px var(--blue-shadow);
+}
+.btn-done:hover{background:var(--blue-dark);transform:translateY(-1px);}
+
+/* ══ CONFETTI — subtle, minimal ══ */
+.cf{position:fixed;top:-10px;pointer-events:none;z-index:9997;border-radius:2px;animation:cffall linear forwards;}
+@keyframes cffall{to{transform:translateY(110vh) rotate(360deg);opacity:0;}}
+
+@media(max-width:600px){
+  .g2,.g3{grid-template-columns:1fr;}
+  .sp2,.sp3{grid-column:span 1;}
+  .fbody{padding:16px 14px 0;}
+  .form-nav{padding:13px 14px;}
+  .plabel{display:none;}
+  .toast-host{top:62px;}
+  .rev-grid{grid-template-columns:1fr;}
+  .s-meta{gap:6px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<header class="navbar">
+  <div class="navbar-logo">
+    <div class="logo-shield"><i class="fa-solid fa-shield-halved"></i></div>
+    <div class="navbar-text-wrap">
+      <span class="navbar-name">Alliance University</span>
+      <span class="navbar-sub">Placement Registration Portal</span>
+    </div>
+  </div>
+  <div class="nav-right-wrap">
+    <div class="nav-live"><div class="nav-dot"></div>LIVE</div>
+  </div>
+</header>
+
+<!-- ══ PROGRESS BAR ══ -->
+<nav class="prog-wrap">
+  <div class="prog-track">
+    <div class="prog-line"></div>
+    <div class="prog-fill" id="pFill"></div>
+    <div class="pstep active" data-step="1"><div class="pnum">1</div><span class="plabel">Personal</span></div>
+    <div class="pstep" data-step="2"><div class="pnum">2</div><span class="plabel">Academic</span></div>
+    <div class="pstep" data-step="3"><div class="pnum">3</div><span class="plabel">Skills</span></div>
+    <div class="pstep" data-step="4"><div class="pnum">4</div><span class="plabel">Documents</span></div>
+    <div class="pstep" data-step="5"><div class="pnum">5</div><span class="plabel">Review</span></div>
+  </div>
+</nav>
+
+<!-- ══ SCROLL AREA ══ -->
+<div class="scroll-area" id="scrollArea">
+<div class="scroll-inner">
+<div class="card">
+
+<!-- ════ STEP 1: PERSONAL ════ -->
+<div class="step active" id="step-1">
+  <div class="sec-hd">
+    <div class="sec-ic"><i class="fa-solid fa-user"></i></div>
+    <div><h2>Personal Information</h2><p>Identity, contact details and guardian information</p></div>
+  </div>
+  <div class="fbody">
+    <div class="dlabel"><span>Passport Photo</span></div>
+    <div class="photo-box" id="photoBox" onclick="document.getElementById('photoInput').click()">
+      <div class="photo-av" id="photoAv"><i class="fa-solid fa-camera" style="color:#9ca3af;font-size:22px;"></i></div>
+      <div class="photo-info">
+        <h4>Upload Passport Photo</h4>
+        <p>JPG or PNG · Max 2 MB · Clear face visible</p>
+        <div class="photo-status" id="photoStatus"><i class="fa-solid fa-check" style="font-size:9px;"></i> Photo selected</div>
+      </div>
+      <input type="file" id="photoInput" accept="image/jpeg,image/png,image/jpg,image/webp" style="display:none" onchange="previewPhoto(this)"/>
+    </div>
+
+    <div class="dlabel"><span>Identity</span></div>
+    <div class="fg g2">
+      <div class="fld">
+        <label>Full Name <span class="req">*</span></label>
+        <input type="text" id="fullName" placeholder="e.g. Aditya Kumar Sharma"/>
+        <span class="err">Full name is required</span>
+      </div>
+      <div class="fld">
+        <label>Date of Birth <span class="req">*</span></label>
+        <input type="date" id="dob"/>
+        <span class="err">Date of birth is required</span>
+      </div>
+      <div class="fld">
+        <label>Gender <span class="req">*</span></label>
+        <select id="gender">
+          <option value="">Select gender</option>
+          <option>Male</option><option>Female</option>
+          <option>Other</option><option>Prefer not to say</option>
+        </select>
+        <span class="err">Please select gender</span>
+      </div>
+      <div class="fld">
+        <label>Nationality</label>
+        <input type="text" id="nationality" value="Indian"/>
+      </div>
+    </div>
+
+    <div class="dlabel"><span>Contact</span></div>
+    <div class="fg g2">
+      <div class="fld">
+        <label>Personal Email <span class="req">*</span></label>
+        <input type="email" id="personalEmail" placeholder="you@gmail.com"/>
+        <span class="err">Valid email required</span>
+      </div>
+      <div class="fld">
+        <label>College Email <span class="req">*</span></label>
+        <input type="email" id="collegeEmail" placeholder="you@alliance.edu.in"/>
+        <span class="err">College email required</span>
+      </div>
+      <div class="fld">
+        <label>Mobile Number <span class="req">*</span></label>
+        <input type="tel" id="mobile" placeholder="+91 98765 43210" maxlength="13"/>
+        <span class="err">Valid mobile required</span>
+      </div>
+      <div class="fld">
+        <label>LinkedIn Profile</label>
+        <input type="url" id="linkedin" placeholder="linkedin.com/in/yourname"/>
+      </div>
+      <div class="fld">
+        <label>GitHub / Portfolio</label>
+        <input type="url" id="github" placeholder="github.com/yourname"/>
+      </div>
+    </div>
+
+    <div class="dlabel"><span>Address</span></div>
+    <div class="fg g1">
+      <div class="fld">
+        <label>Permanent Address <span class="req">*</span></label>
+        <textarea id="address" placeholder="Door No., Street, Area"></textarea>
+        <span class="err">Address is required</span>
+      </div>
+    </div>
+    <div class="fg g3" style="margin-top:14px;">
+      <div class="fld"><label>City</label><input type="text" id="city" placeholder="Bengaluru"/></div>
+      <div class="fld"><label>State</label><select id="state"><option value="">Select State</option></select></div>
+      <div class="fld"><label>PIN Code</label><input type="text" id="pincode" placeholder="560001" maxlength="6"/></div>
+    </div>
+
+    <div class="dlabel"><span>Parent / Guardian</span></div>
+    <div class="fg g2">
+      <div class="fld">
+        <label>Father's Full Name <span class="req">*</span></label>
+        <input type="text" id="fatherName" placeholder="Father's full name"/>
+        <span class="err">Required</span>
+      </div>
+      <div class="fld">
+        <label>Mother's Full Name <span class="req">*</span></label>
+        <input type="text" id="motherName" placeholder="Mother's full name"/>
+        <span class="err">Required</span>
+      </div>
+      <div class="fld">
+        <label>Parent Contact Number</label>
+        <input type="tel" id="parentMobile" placeholder="+91 XXXXX XXXXX"/>
+      </div>
+    </div>
+  </div>
+  <div class="form-nav">
+    <div></div>
+    <div class="nav-right-footer">
+      <span class="step-ct">Step 1 of 5</span>
+      <button class="btn-next" onclick="nextStep(1)">Academic <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ STEP 2: ACADEMIC ════ -->
+<div class="step" id="step-2">
+  <div class="sec-hd">
+    <div class="sec-ic"><i class="fa-solid fa-graduation-cap"></i></div>
+    <div><h2>Academic Details</h2><p>10th, 12th / PUC and current degree information</p></div>
+  </div>
+  <div class="fbody">
+    <div class="dlabel"><span>Degree Program</span></div>
+    <div class="fg g2">
+      <div class="fld">
+        <label>University Name <span class="req">*</span></label>
+        <input type="text" id="univName" value="Alliance University"/>
+        <span class="err">Required</span>
+      </div>
+      <div class="fld">
+        <label>Degree Program <span class="req">*</span></label>
+        <select id="degree">
+          <option value="">Select degree</option>
+          <option>B.Tech</option><option>B.E.</option><option>B.Sc</option>
+          <option>B.Com</option><option>BBA</option><option>MBA</option>
+          <option>LLB</option><option>MCA</option><option>M.Tech</option>
+        </select>
+        <span class="err">Required</span>
+      </div>
+<div class="fld">
+  <label>Department <span class="req">*</span></label>
+  <select id="department">
+    <option value="">Select department</option>
+    <option value="CSE">Computer Science &amp; Engineering</option>
+    <option value="IT">Information Science &amp; Engineering</option>
+    <option value="EC">Electronics &amp; Communication Engineering</option>
+    <option value="EEE">Electrical &amp; Electronics Engineering</option>
+    <option value="ME">Mechanical Engineering</option>
+    <option value="CE">Civil Engineering</option>
+    <option value="MBA">Business Administration (MBA)</option>
+    <option value="BCOM">Commerce (B.Com)</option>
+    <option value="LLB">Law (LLB)</option>
+    <option value="Other">Other</option>
+  </select>
+  <span class="err">Required</span>
+</div>
+
+<div class="fld">
+  <label>Specialization <span class="req">*</span></label>
+  <select id="specialization">
+    <option value="">Select specialization</option>
+    <option value="AI">Artificial Intelligence &amp; Machine Learning</option>
+    <option value="DA">Data Science &amp; Analytics</option>
+    <option value="CS">Cyber Security</option>
+    <option value="Cloud">Cloud Computing &amp; DevOps</option>
+    <option value="IoT">Internet of Things (IoT)</option>
+    <option value="FS">Full Stack Development</option>
+    <option value="VLSI">VLSI &amp; Embedded Systems</option>
+    <option value="General">General / No Specialization</option>
+  </select>
+  <span class="err">Required</span>
+</div>
+      <div class="fld">
+        <label>Registration / USN Number <span class="req">*</span></label>
+        <input type="text" id="usn" placeholder="AU2024CS001" style="font-family:var(--mono);letter-spacing:.05em;"/>
+        <span class="err">USN is required</span>
+      </div>
+      <div class="fld">
+        <label>Graduation Year <span class="req">*</span></label>
+        <select id="batch">
+          <option value="">Select year</option>
+          <option>2025</option><option>2026</option><option>2027</option><option>2028</option>
+        </select>
+        <span class="err">Required</span>
+      </div>
+      <div class="fld">
+        <label>Current Semester</label>
+        <select id="semester">
+          <option>1st Semester</option><option>2nd Semester</option>
+          <option>3rd Semester</option><option>4th Semester</option>
+          <option>5th Semester</option><option>6th Semester</option>
+          <option>7th Semester</option><option>8th Semester</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label>Current CGPA <span class="req">*</span></label>
+        <input type="number" id="cgpa" placeholder="8.50" step="0.01" min="0" max="10"/>
+        <span class="err">CGPA required (0–10)</span>
+      </div>
+      <div class="fld">
+        <label>Current Percentage (%)</label>
+        <input type="text" id="currentPct" placeholder="e.g. 78.5%"/>
+      </div>
+    </div>
+
+    <div class="dlabel"><span>10th Standard / SSLC</span></div>
+    <div class="fg g2">
+      <div class="fld"><label>Board <span class="req">*</span></label><input type="text" id="x_board" placeholder="e.g. KSEEB / CBSE / ICSE"/><span class="err">Required</span></div>
+      <div class="fld"><label>School Name <span class="req">*</span></label><input type="text" id="x_school" placeholder="High school name"/><span class="err">Required</span></div>
+      <div class="fld"><label>Year of Passing <span class="req">*</span></label><input type="text" id="x_year" placeholder="e.g. 2020" maxlength="4"/><span class="err">Required</span></div>
+      <div class="fld"><label>Percentage / CGPA <span class="req">*</span></label><input type="text" id="x_percent" placeholder="e.g. 93.4%"/><span class="err">Required</span></div>
+    </div>
+
+    <div class="dlabel"><span>12th Standard / PUC</span></div>
+    <div class="fg g2">
+      <div class="fld"><label>Board / University <span class="req">*</span></label><input type="text" id="xii_board" placeholder="e.g. Karnataka PUC / CBSE"/><span class="err">Required</span></div>
+      <div class="fld"><label>School / College Name <span class="req">*</span></label><input type="text" id="xii_school" placeholder="School or PU College name"/><span class="err">Required</span></div>
+      <div class="fld"><label>Year of Passing <span class="req">*</span></label><input type="text" id="xii_year" placeholder="e.g. 2022" maxlength="4"/><span class="err">Required</span></div>
+      <div class="fld"><label>Stream</label><input type="text" id="xii_stream" placeholder="e.g. Science (PCM) / Commerce"/></div>
+      <div class="fld"><label>Percentage / Grade <span class="req">*</span></label><input type="text" id="xii_percent" placeholder="e.g. 91.4%"/><span class="err">Required</span></div>
+    </div>
+
+    <div class="dlabel"><span>Backlogs</span></div>
+    <div class="backlog-row">
+      <label>Do you have any active backlogs?</label>
+      <div class="backlog-toggle">
+        <span class="on" onclick="setBacklog(this,'No')">No</span>
+        <span onclick="setBacklog(this,'Yes')">Yes</span>
+      </div>
+    </div>
+    <div id="backlogCountWrap" style="display:none;margin-top:12px;">
+      <div class="fg g2">
+        <div class="fld"><label>Number of Active Backlogs</label><input type="number" id="backlogCount" placeholder="e.g. 2" min="1" max="20"/></div>
+      </div>
+    </div>
+  </div>
+  <div class="form-nav">
+    <button class="btn-back" onclick="prevStep(2)">← Back</button>
+    <div class="nav-right-footer">
+      <span class="step-ct">Step 2 of 5</span>
+      <button class="btn-next" onclick="nextStep(2)">Skills <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ STEP 3: SKILLS ════ -->
+<div class="step" id="step-3">
+  <div class="sec-hd">
+    <div class="sec-ic"><i class="fa-solid fa-bolt"></i></div>
+    <div><h2>Skills &amp; Experience</h2><p>Select as many skills as apply — add your own too</p></div>
+  </div>
+  <div class="fbody">
+    <div class="dlabel"><span>Programming Languages</span></div>
+    <div class="pills-wrap" id="langPills">
+      <span class="pill" onclick="togglePill(this)" data-val="Python">Python</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Java">Java</span>
+      <span class="pill" onclick="togglePill(this)" data-val="C++">C++</span>
+      <span class="pill" onclick="togglePill(this)" data-val="C">C</span>
+      <span class="pill" onclick="togglePill(this)" data-val="JavaScript">JavaScript</span>
+      <span class="pill" onclick="togglePill(this)" data-val="TypeScript">TypeScript</span>
+      <span class="pill" onclick="togglePill(this)" data-val="SQL">SQL</span>
+      <span class="pill" onclick="togglePill(this)" data-val="R">R</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Kotlin">Kotlin</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Go">Go</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Swift">Swift</span>
+      <span class="pill" onclick="togglePill(this)" data-val="PHP">PHP</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Rust">Rust</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Dart">Dart</span>
+    </div>
+    <div class="add-custom-row">
+      <input type="text" id="customLang" placeholder="Add another language…" onkeydown="if(event.key==='Enter'){addCustomPill('customLang','langPills');event.preventDefault();}"/>
+      <button onclick="addCustomPill('customLang','langPills')">+ Add</button>
+    </div>
+
+    <div class="dlabel"><span>Frameworks &amp; Tools</span></div>
+    <div class="pills-wrap" id="frameworkPills">
+      <span class="pill" onclick="togglePill(this)" data-val="React">React</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Node.js">Node.js</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Django">Django</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Spring Boot">Spring Boot</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Docker">Docker</span>
+      <span class="pill" onclick="togglePill(this)" data-val="AWS">AWS</span>
+      <span class="pill" onclick="togglePill(this)" data-val="ML/AI">ML / AI</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Git">Git</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Android">Android</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Flutter">Flutter</span>
+      <span class="pill" onclick="togglePill(this)" data-val="TensorFlow">TensorFlow</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Figma">Figma</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Firebase">Firebase</span>
+      <span class="pill" onclick="togglePill(this)" data-val="Kubernetes">Kubernetes</span>
+    </div>
+    <div class="add-custom-row">
+      <input type="text" id="customFramework" placeholder="Add another tool/framework…" onkeydown="if(event.key==='Enter'){addCustomPill('customFramework','frameworkPills');event.preventDefault();}"/>
+      <button onclick="addCustomPill('customFramework','frameworkPills')">+ Add</button>
+    </div>
+
+    <div class="dlabel"><span>Internship Experience</span></div>
+    <div id="internshipsContainer"></div>
+    <button class="add-more-btn" onclick="addInternship()"><span>＋</span> Add Internship</button>
+
+    <div class="dlabel"><span>Projects</span></div>
+    <div id="projectsContainer"></div>
+    <button class="add-more-btn" onclick="addProject()"><span>＋</span> Add Project</button>
+
+    <div class="dlabel"><span>Certifications &amp; Achievements</span></div>
+    <div class="fg g2">
+      <div class="fld"><label>Certifications</label><textarea id="certifications" placeholder="e.g. AWS Cloud Practitioner (2024)…" style="min-height:68px;"></textarea></div>
+      <div class="fld"><label>Achievements / Awards</label><textarea id="achievements" placeholder="e.g. 1st in National Hackathon…" style="min-height:68px;"></textarea></div>
+    </div>
+  </div>
+  <div class="form-nav">
+    <button class="btn-back" onclick="prevStep(3)">← Back</button>
+    <div class="nav-right-footer">
+      <span class="step-ct">Step 3 of 5</span>
+      <button class="btn-next" onclick="nextStep(3)">Documents <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ STEP 4: DOCUMENTS ════ -->
+<div class="step" id="step-4">
+  <div class="sec-hd">
+    <div class="sec-ic"><i class="fa-solid fa-paperclip"></i></div>
+    <div><h2>Documents &amp; Declaration</h2><p>Upload your resume and agree to the declaration</p></div>
+  </div>
+  <div class="fbody">
+    <div class="dlabel"><span>Resume / CV</span></div>
+    <div class="res-box" id="resumeBox"
+      onclick="document.getElementById('resumeInput').click()"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="dropResume(event)">
+      <div class="ri">📄</div>
+      <h4>Drag &amp; Drop or Click to Upload Resume</h4>
+      <p>PDF preferred · Max 2 MB · Latest version</p>
+      <input type="file" id="resumeInput" accept=".pdf,.doc,.docx" style="display:none" onchange="selectResume(this)"/>
+    </div>
+    <div class="res-done" id="resumeDone">
+      <span>✅</span>
+      <span id="resumeName">resume.pdf</span>
+      <span style="margin-left:auto;font-size:11px;color:var(--text-m);" id="resumeSz"></span>
+    </div>
+
+    <div class="dlabel"><span>Declaration</span></div>
+    <div class="decl-box">
+      <p>I hereby declare that all the information furnished above is true, complete, and correct to the best of my knowledge. I understand that any misrepresentation may result in disqualification from placement activities. I consent to my information being shared with recruiting companies for placement purposes only.</p>
+      <label class="decl-chk">
+        <input type="checkbox" id="declaration"/>
+        I agree to the above declaration
+      </label>
+    </div>
+    <div class="fg g1" style="margin-top:18px;">
+      <div class="fld"><label>Date <span class="req">*</span></label><input type="date" id="declDate"/></div>
+    </div>
+  </div>
+  <div class="form-nav">
+    <button class="btn-back" onclick="prevStep(4)">← Back</button>
+    <div class="nav-right-footer">
+      <span class="step-ct">Step 4 of 5</span>
+      <button class="btn-next" onclick="nextStep(4)">Review <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ STEP 5: REVIEW ════ -->
+<div class="step" id="step-5">
+  <div class="sec-hd">
+    <div class="sec-ic"><i class="fa-solid fa-check-circle"></i></div>
+    <div><h2>Review &amp; Submit</h2><p>Verify your details before final submission</p></div>
+  </div>
+  <div class="fbody">
+    <div class="already-reg-banner" id="alreadyRegBanner">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div style="flex:1;">
+        <div class="arb-text">
+          <h4 id="alreadyRegTitle">Already Registered!</h4>
+          <p id="alreadyRegMsg">A registration already exists with this USN / Email. Do you want to update your existing profile?</p>
+        </div>
+        <div class="arb-actions">
+          <button class="arb-btn-update" onclick="forceUpdate()"><i class="fa-solid fa-rotate"></i> Yes, Update My Profile</button>
+          <button class="arb-btn-cancel" onclick="hideAlreadyReg()"><i class="fa-solid fa-xmark"></i> Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div id="reviewContent"></div>
+  </div>
+  <div class="form-nav">
+    <button class="btn-back" onclick="prevStep(5)">← Edit</button>
+    <div class="nav-right-footer">
+      <span class="step-ct">Step 5 of 5</span>
+      <button class="btn-submit" id="submitBtn" onclick="submitForm()">
+        <i class="fa-solid fa-graduation-cap"></i> Submit Registration
+      </button>
+    </div>
+  </div>
+</div>
+
+</div></div></div>
+
+<!-- ══ SUCCESS OVERLAY — professional ══ -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="success-top">
+      <div class="success-check"><i class="fa-solid fa-check"></i></div>
+      <h2 id="successTitle">Registration Submitted</h2>
+      <p id="successSubtitle">Your profile is now live on the placement portal</p>
+    </div>
+    <div class="success-body">
+      <p class="success-msg" id="successMsg">Your details have been saved successfully. Recruiters can now discover your profile.</p>
+      <div class="s-meta" id="successMeta"></div>
+      <div class="success-actions">
+        <button class="btn-done" onclick="restartForm()"><i class="fa-solid fa-check"></i> Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOADER ══ -->
+<div class="loader" id="loader">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loaderTitle">Uploading…</div>
+  <div class="loader-prog"><div class="loader-prog-fill" id="loaderProgFill"></div></div>
+</div>
+
+<!-- ══ TOAST HOST ══ -->
+<div class="toast-host" id="toastHost"></div>
+
+<script>
+
+const SUPABASE_URL  = 'https://zaqfpoobhvvyndtazyxw.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphcWZwb29iaHZ2eW5kdGF6eXh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzUwMzUsImV4cCI6MjA5MzkxMTAzNX0.nfGqIZpcp_Vl3t0rJX84qB4QhiIyhC-q9GfAcboV2hI';
+const PHOTO_BUCKET  = 'student-photos';
+const RESUME_BUCKET = 'student-resumes';
+const DB_TABLE      = 'student_registrations';
+
+/* ══ STATE ══ */
+let currentStep = 1;
+const TOTAL = 5;
+let internshipCount = 0;
+let projectCount    = 0;
+let hasBacklogs     = false;
+let photoFile       = null;
+let resumeFile      = null;
+let forceUpdateMode = false;
+
+/* ══ STATES LIST ══ */
+const STATES = ["Andaman and Nicobar Islands","Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Ladakh","Lakshadweep","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Puducherry","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal"];
+const sel = document.getElementById('state');
+STATES.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
+
+/* ══ NAVIGATION ══ */
+function nextStep(from){ if(validateStep(from)) goTo(from+1); }
+function prevStep(from){ if(from>1) goTo(from-1); }
+function goTo(n){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step-'+n).classList.add('active');
+  document.querySelectorAll('.pstep').forEach((node,i)=>{
+    node.classList.remove('active','done');
+    if(i+1 < n) node.classList.add('done');
+    if(i+1 === n) node.classList.add('active');
+  });
+  document.getElementById('pFill').style.width=((n-1)/(TOTAL-1))*100+'%';
+  if(n===5) buildReview();
+  currentStep=n;
+  document.getElementById('scrollArea').scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══ VALIDATION ══ */
+const REQUIRED = {
+  1:['fullName','dob','gender','personalEmail','collegeEmail','mobile','address','fatherName','motherName'],
+  2:['degree','department','specialization','univName','usn','batch','cgpa','x_board','x_school','x_year','x_percent','xii_board','xii_school','xii_year','xii_percent'],
+  3:[],4:[]
+};
+function validateStep(step){
+  let ok=true;
+  (REQUIRED[step]||[]).forEach(id=>{
+    const el=document.getElementById(id);
+    const fld=el?.closest('.fld');
+    if(!el?.value?.trim()){fld?.classList.add('invalid');ok=false;}
+    else{fld?.classList.remove('invalid');fld?.classList.add('valid');}
+  });
+  if(!ok){
+    document.getElementById('step-'+step).querySelector('.fld.invalid')?.scrollIntoView({behavior:'smooth',block:'center'});
+    toast('⚠️','Missing Fields','Please fill in all required fields.','error',3500);
+  }
+  return ok;
+}
+
+/* ══ PHOTO — FIXED ══
+   - Accept: image/jpeg, image/png, image/webp
+   - Size limit raised to 2 MB (was 0.5 MB — too strict)
+   - Stops click propagation from hidden input change from bubbling oddly
+   - Uses FileReader correctly; shows preview immediately
+*/
+function previewPhoto(input){
+  const file = input.files && input.files[0];
+  if(!file) return;
+
+  // Validate type
+  const allowed = ['image/jpeg','image/jpg','image/png','image/webp'];
+  if(!allowed.includes(file.type)){
+    toast('❌','Invalid Format','Please upload a JPG, PNG or WebP image.','error',3500);
+    input.value = '';
+    return;
+  }
+
+  // Validate size (2 MB)
+  if(file.size > 2 * 1024 * 1024){
+    toast('❌','File Too Large','Photo must be under 2 MB. Please compress and try again.','error',3500);
+    input.value = '';
+    return;
+  }
+
+  photoFile = file;
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.alt = 'Photo preview';
+    const av = document.getElementById('photoAv');
+    av.innerHTML = '';
+    av.appendChild(img);
+    document.getElementById('photoStatus').classList.add('show');
+    toast('📷','Photo Ready',file.name.length > 30 ? file.name.substring(0,30)+'…' : file.name,'success',2500);
+  };
+  reader.onerror = function(){
+    toast('❌','Read Error','Could not read the image file. Try again.','error',3000);
+    photoFile = null;
+    input.value = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ══ RESUME ══ */
+function selectResume(input){
+  if(input.files && input.files[0]){
+    const file = input.files[0];
+    if(file.size > 2 * 1024 * 1024){
+      toast('❌','File Too Large','Resume must be under 2 MB.','error',3500);
+      input.value = '';
+      return;
+    }
+    resumeFile = file;
+    showResumeDone(resumeFile);
+  }
+}
+function dropResume(e){
+  e.preventDefault();
+  document.getElementById('resumeBox').classList.remove('drag');
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if(f){
+    if(f.size > 2 * 1024 * 1024){
+      toast('❌','File Too Large','Resume must be under 2 MB.','error',3500);
+      return;
+    }
+    resumeFile = f;
+    showResumeDone(f);
+  }
+}
+function showResumeDone(f){
+  document.getElementById('resumeName').textContent = f.name;
+  document.getElementById('resumeSz').textContent = (f.size/1024).toFixed(0) + ' KB';
+  document.getElementById('resumeDone').classList.add('show');
+  toast('📄','Resume Ready',f.name.length > 30 ? f.name.substring(0,30)+'…' : f.name,'success',2500);
+}
+
+/* ══ BACKLOGS ══ */
+function setBacklog(el,val){
+  document.querySelectorAll('.backlog-toggle span').forEach(s=>s.classList.remove('on'));
+  el.classList.add('on');
+  hasBacklogs = (val==='Yes');
+  document.getElementById('backlogCountWrap').style.display = hasBacklogs ? 'block' : 'none';
+}
+
+/* ══ PILLS ══ */
+function togglePill(el){ el.classList.toggle('on'); }
+function addCustomPill(inputId, pillsId){
+  const input = document.getElementById(inputId);
+  const val = input.value.trim();
+  if(!val) return;
+  for(let p of document.querySelectorAll(`#${pillsId} .pill`)){
+    if(p.dataset.val?.toLowerCase() === val.toLowerCase()){
+      toast('⚠️','Already Added',`"${val}" is already in the list.`,'warn',2000);
+      return;
+    }
+  }
+  const pill = document.createElement('span');
+  pill.className = 'pill on';
+  pill.dataset.val = val;
+  pill.textContent = val;
+  pill.onclick = function(){ togglePill(this); };
+  document.getElementById(pillsId).appendChild(pill);
+  input.value = '';
+}
+function getSelectedPills(id){
+  return Array.from(document.querySelectorAll(`#${id} .pill.on`))
+    .map(p => p.dataset.val || p.textContent.replace(/^✓ /,''))
+    .join(', ') || '—';
+}
+
+/* ══ DYNAMIC ENTRIES ══ */
+function addInternship(){
+  internshipCount++;
+  const n = internshipCount;
+  const card = document.createElement('div');
+  card.className = 'entry-card';
+  card.id = `intern-card-${n}`;
+  card.innerHTML = `
+    <div class="entry-num">Internship ${n}</div>
+    <button class="remove-btn" onclick="removeEntry('intern-card-${n}')" title="Remove">✕</button>
+    <div class="fg g2">
+      <div class="fld"><label>Company Name</label><input type="text" id="i${n}_company" placeholder="Company name"/></div>
+      <div class="fld"><label>Role / Position</label><input type="text" id="i${n}_role" placeholder="e.g. Software Developer Intern"/></div>
+      <div class="fld"><label>Duration</label><input type="text" id="i${n}_duration" placeholder="e.g. May – Jul 2024"/></div>
+      <div class="fld"><label>Stipend (₹/month)</label><input type="text" id="i${n}_stipend" placeholder="e.g. 15,000"/></div>
+      <div class="fld sp2"><label>Description</label><textarea id="i${n}_desc" placeholder="Technologies used, impact made…" style="min-height:60px;"></textarea></div>
+    </div>`;
+  document.getElementById('internshipsContainer').appendChild(card);
+}
+function addProject(){
+  projectCount++;
+  const n = projectCount;
+  const card = document.createElement('div');
+  card.className = 'entry-card';
+  card.id = `proj-card-${n}`;
+  card.innerHTML = `
+    <div class="entry-num">Project ${n}</div>
+    <button class="remove-btn" onclick="removeEntry('proj-card-${n}')" title="Remove">✕</button>
+    <div class="fg g1">
+      <div class="fld"><label>Project Title</label><input type="text" id="p${n}_title" placeholder="e.g. Smart Traffic Management System"/></div>
+      <div class="fld"><label>Tech Stack</label><input type="text" id="p${n}_tech" placeholder="e.g. React, Node.js, MongoDB"/></div>
+      <div class="fld"><label>Description / Link</label><textarea id="p${n}_desc" placeholder="Brief description, outcome, GitHub link…" style="min-height:64px;"></textarea></div>
+    </div>`;
+  document.getElementById('projectsContainer').appendChild(card);
+}
+function removeEntry(cardId){
+  const el = document.getElementById(cardId);
+  if(el){ el.style.animation = 'fadeUp .2s ease reverse'; setTimeout(()=>el.remove(), 180); }
+}
+
+/* ══ HELPERS ══ */
+function g(id){ return document.getElementById(id)?.value?.trim() || ''; }
+
+/* ══ REVIEW ══ */
+function buildReview(){
+  hideAlreadyReg();
+  forceUpdateMode = false;
+  let internsHTML = '', projsHTML = '';
+  for(let i=1; i<=internshipCount; i++){
+    const el = document.getElementById(`intern-card-${i}`); if(!el) continue;
+    const co = g(`i${i}_company`), ro = g(`i${i}_role`), du = g(`i${i}_duration`);
+    if(co) internsHTML += `<div class="rev-item"><span class="rl">Internship ${i}</span><span class="rv">${co}${ro?' — '+ro:''}${du?' ('+du+')':''}</span></div>`;
+  }
+  for(let i=1; i<=projectCount; i++){
+    const el = document.getElementById(`proj-card-${i}`); if(!el) continue;
+    const ti = g(`p${i}_title`), te = g(`p${i}_tech`);
+    if(ti) projsHTML += `<div class="rev-item"><span class="rl">Project ${i}</span><span class="rv">${ti}${te?' | '+te:''}</span></div>`;
+  }
+  document.getElementById('reviewContent').innerHTML = `
+    <div class="rev-sec"><h4>Personal Information</h4><div class="rev-grid">
+      <div class="rev-item"><span class="rl">Full Name</span><span class="rv">${g('fullName')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Date of Birth</span><span class="rv">${g('dob')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Gender</span><span class="rv">${g('gender')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Nationality</span><span class="rv">${g('nationality')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Personal Email</span><span class="rv">${g('personalEmail')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">College Email</span><span class="rv">${g('collegeEmail')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Mobile</span><span class="rv">${g('mobile')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">City / State</span><span class="rv">${g('city')||'—'}, ${g('state')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Father's Name</span><span class="rv">${g('fatherName')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Mother's Name</span><span class="rv">${g('motherName')||'—'}</span></div>
+    </div></div>
+    <div class="rev-sec"><h4>Academic Details</h4><div class="rev-grid">
+      <div class="rev-item"><span class="rl">University</span><span class="rv">${g('univName')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Degree</span><span class="rv">${g('degree')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Department</span><span class="rv">${g('department')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Specialization</span><span class="rv">${g('specialization')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">USN / Reg. No.</span><span class="rv" style="font-family:var(--mono);">${g('usn')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Graduation Year</span><span class="rv">${g('batch')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Current CGPA</span><span class="rv" style="color:var(--blue);font-weight:800;">${g('cgpa')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">Backlogs</span><span class="rv">${hasBacklogs?(g('backlogCount')||'Yes'):'None'}</span></div>
+      <div class="rev-item"><span class="rl">10th Board / %</span><span class="rv">${g('x_board')||'—'} · ${g('x_percent')||'—'}</span></div>
+      <div class="rev-item"><span class="rl">12th Board / %</span><span class="rv">${g('xii_board')||'—'} · ${g('xii_percent')||'—'}</span></div>
+    </div></div>
+    <div class="rev-sec"><h4>Skills &amp; Experience</h4><div class="rev-grid">
+      <div class="rev-item"><span class="rl">Languages</span><span class="rv">${getSelectedPills('langPills')}</span></div>
+      <div class="rev-item"><span class="rl">Frameworks / Tools</span><span class="rv">${getSelectedPills('frameworkPills')}</span></div>
+      ${internsHTML}${projsHTML}
+    </div></div>
+    <div class="rev-sec"><h4>Documents</h4><div class="rev-grid">
+      <div class="rev-item"><span class="rl">Photo</span><span class="rv">${photoFile?'✅ '+photoFile.name:'Not uploaded'}</span></div>
+      <div class="rev-item"><span class="rl">Resume</span><span class="rv">${resumeFile?'✅ '+resumeFile.name:'Not uploaded'}</span></div>
+      <div class="rev-item"><span class="rl">Declaration</span><span class="rv">${document.getElementById('declaration')?.checked?'✅ Agreed':'❌ Not agreed'}</span></div>
+    </div></div>`;
+}
+
+/* ══ ALREADY REGISTERED BANNER ══ */
+function showAlreadyReg(matchType){
+  const banner = document.getElementById('alreadyRegBanner');
+  document.getElementById('alreadyRegTitle').textContent = 'Already Registered!';
+  document.getElementById('alreadyRegMsg').textContent =
+    matchType === 'usn'
+      ? `USN "${g('usn')}" is already registered. Do you want to update your existing profile?`
+      : `Email "${g('collegeEmail')}" is already registered. Do you want to update your existing profile?`;
+  banner.classList.add('show');
+  banner.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function hideAlreadyReg(){
+  document.getElementById('alreadyRegBanner').classList.remove('show');
+}
+function forceUpdate(){
+  hideAlreadyReg();
+  forceUpdateMode = true;
+  toast('🔄','Updating Profile','Proceeding to update your existing registration…','info',3000);
+  submitForm();
+}
+
+/* ══ LOADER ══ */
+function setLoaderTitle(title, pct){
+  document.getElementById('loaderTitle').textContent = title;
+  if(pct !== undefined) document.getElementById('loaderProgFill').style.width = pct + '%';
+}
+
+/* ══ CHECK DUPLICATE ══ */
+async function checkDuplicate(){
+  const usn   = g('usn');
+  const email = g('collegeEmail');
+
+  async function countRows(filter){
+    try{
+      const r = await fetch(
+        `${SUPABASE_URL}/rest/v1/${DB_TABLE}?${filter}&select=id`,
+        {
+          method:'GET',
+          headers:{
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Accept': 'application/json',
+            'Prefer': 'count=exact',
+            'Range': '0-0'
+          }
+        }
+      );
+      const cr = r.headers.get('content-range');
+      if(cr){
+        const total = parseInt(cr.split('/')[1]);
+        if(!isNaN(total)) return total;
+      }
+      if(r.ok){
+        const d = await r.json().catch(()=>[]);
+        return Array.isArray(d) ? d.length : 0;
+      }
+      return 0;
+    }catch(e){
+      console.warn('Duplicate check failed:',e);
+      return 0;
+    }
+  }
+
+  const usnCount = await countRows(`usn=eq.${encodeURIComponent(usn)}`);
+  if(usnCount > 0) return {exists:true, matchType:'usn'};
+
+  const emailCount = await countRows(`college_email=eq.${encodeURIComponent(email)}`);
+  if(emailCount > 0) return {exists:true, matchType:'email'};
+
+  return {exists:false, matchType:null};
+}
+
+/* ══ UPLOAD FILE ══ */
+async function uploadFile(bucket, filePath, file){
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${filePath}`, {
+    method:'POST',
+    headers:{
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': file.type || 'application/octet-stream',
+      'x-upsert': 'true'
+    },
+    body: file
+  });
+  if(!res.ok){
+    let errMsg = `Upload failed (${res.status})`;
+    try{ const j = await res.json(); errMsg = j?.message || j?.error || errMsg; }catch(e){}
+    if(res.status === 400 || res.status === 403){
+      console.warn(`Storage upload blocked (${res.status}) — continuing without file`);
+      return null;
+    }
+    throw new Error(errMsg);
+  }
+  return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${filePath}`;
+}
+
+/* ══ DELETE FILE rollback ══ */
+async function deleteFile(bucket, filePath){
+  try{
+    await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${filePath}`,{
+      method:'DELETE',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}
+    });
+  }catch(e){ console.warn('Rollback delete failed:',e); }
+}
+
+/* ══ COLLECT PAYLOAD ══ */
+function collectData(photoUrl, resumeUrl){
+  const internships = [], projects = [];
+  for(let i=1; i<=internshipCount; i++){
+    const el = document.getElementById(`intern-card-${i}`); if(!el) continue;
+    internships.push({company:g(`i${i}_company`),role:g(`i${i}_role`),duration:g(`i${i}_duration`),stipend:g(`i${i}_stipend`),description:g(`i${i}_desc`)});
+  }
+  for(let i=1; i<=projectCount; i++){
+    const el = document.getElementById(`proj-card-${i}`); if(!el) continue;
+    projects.push({title:g(`p${i}_title`),tech:g(`p${i}_tech`),description:g(`p${i}_desc`)});
+  }
+  const backlogNum = hasBacklogs ? (parseInt(g('backlogCount'))||1) : 0;
+  return {
+    full_name:g('fullName'),name:g('fullName'),
+    dob:g('dob'),gender:g('gender'),nationality:g('nationality'),
+    personal_email:g('personalEmail'),email:g('personalEmail'),
+    college_email:g('collegeEmail'),
+    mobile:g('mobile'),phone:g('mobile'),
+    linkedin:g('linkedin'),github:g('github'),
+    address:g('address'),city:g('city'),state:g('state'),pincode:g('pincode'),
+    father_name:g('fatherName'),mother_name:g('motherName'),parent_mobile:g('parentMobile'),
+    university_name:g('univName'),
+    degree_program:g('degree'),degree:g('degree'),
+    department:g('department'),dept:g('department'),
+    specialization:g('specialization'),
+    usn:g('usn'),
+    graduation_year:g('batch'),
+    current_semester:g('semester'),
+    cgpa:parseFloat(g('cgpa'))||null,current_cgpa:parseFloat(g('cgpa'))||null,
+    current_percentage:g('currentPct'),
+    backlogs:backlogNum,
+    x_board:g('x_board'),x_school:g('x_school'),x_year:g('x_year'),x_percentage:g('x_percent'),
+    xii_board:g('xii_board'),xii_school:g('xii_school'),xii_year:g('xii_year'),xii_stream:g('xii_stream'),xii_percentage:g('xii_percent'),
+    programming_languages:getSelectedPills('langPills'),
+    frameworks_tools:getSelectedPills('frameworkPills'),
+    skills:[getSelectedPills('langPills'),getSelectedPills('frameworkPills')].filter(s=>s!=='—').join(', '),
+    internships:JSON.stringify(internships),
+    projects:JSON.stringify(projects),
+    certifications:g('certifications'),
+    achievements:g('achievements'),
+    photo_url:photoUrl||null,
+    resume_url:resumeUrl||null,
+    declaration_date:g('declDate'),
+    registered_at:new Date().toISOString(),
+    profile_status:'active'
+  };
+}
+
+/* ══ SUBMIT ══ */
+async function submitForm(){
+  if(!document.getElementById('declaration').checked){
+    toast('⚠️','Declaration Required','Please tick the declaration checkbox to proceed.','error',3500);
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking…';
+
+  if(!forceUpdateMode){
+    const dup = await checkDuplicate();
+    if(dup.exists){
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-graduation-cap"></i> Submit Registration';
+      showAlreadyReg(dup.matchType);
+      return;
+    }
+  }
+
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting…';
+  document.getElementById('loader').classList.add('show');
+
+  const usn  = g('usn') || ('student_' + Date.now());
+  const safe = usn.replace(/[^a-zA-Z0-9_-]/g,'_');
+  const ts   = Date.now();
+
+  let photoUrl = null, resumeUrl = null;
+  let uploadedPhotoPath = null, uploadedResumePath = null;
+
+  try{
+    /* Upload Photo */
+    setLoaderTitle('Uploading photo…', 20);
+    if(photoFile){
+      const ext  = photoFile.name.split('.').pop() || 'jpg';
+      const path = `${safe}_${ts}_photo.${ext}`;
+      const url  = await uploadFile(PHOTO_BUCKET, path, photoFile);
+      if(url){ photoUrl = url; uploadedPhotoPath = path; }
+      else{ toast('⚠️','Photo Skipped','Storage upload skipped — profile saved without photo.','warn',3000); }
+    }
+
+    /* Upload Resume */
+    setLoaderTitle('Uploading resume…', 45);
+    if(resumeFile){
+      const ext  = resumeFile.name.split('.').pop() || 'pdf';
+      const path = `${safe}_${ts}_resume.${ext}`;
+      const url  = await uploadFile(RESUME_BUCKET, path, resumeFile);
+      if(url){ resumeUrl = url; uploadedResumePath = path; }
+      else{ toast('⚠️','Resume Skipped','Storage upload skipped — profile saved without resume.','warn',3000); }
+    }
+
+    /* Save to DB */
+    setLoaderTitle('Saving your profile…', 72);
+    const payload = collectData(photoUrl, resumeUrl);
+
+    let dbRes, isUpdate = false;
+
+    if(forceUpdateMode){
+      isUpdate = true;
+      const emailEnc = encodeURIComponent(payload.college_email);
+      dbRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/${DB_TABLE}?college_email=eq.${emailEnc}`,
+        {
+          method:'PATCH',
+          headers:{
+            'Content-Type':'application/json',
+            'apikey':SUPABASE_KEY,
+            'Authorization':`Bearer ${SUPABASE_KEY}`,
+            'Prefer':'return=minimal'
+          },
+          body:JSON.stringify(payload)
+        }
+      );
+      if(!dbRes.ok){
+        const usnEnc = encodeURIComponent(payload.usn);
+        dbRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/${DB_TABLE}?usn=eq.${usnEnc}`,
+          {
+            method:'PATCH',
+            headers:{
+              'Content-Type':'application/json',
+              'apikey':SUPABASE_KEY,
+              'Authorization':`Bearer ${SUPABASE_KEY}`,
+              'Prefer':'return=minimal'
+            },
+            body:JSON.stringify(payload)
+          }
+        );
+      }
+    } else {
+      dbRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/${DB_TABLE}`,
+        {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            'apikey':SUPABASE_KEY,
+            'Authorization':`Bearer ${SUPABASE_KEY}`,
+            'Prefer':'return=minimal'
+          },
+          body:JSON.stringify(payload)
+        }
+      );
+    }
+
+    const statusOk = dbRes.status === 200 || dbRes.status === 201 || dbRes.status === 204;
+
+    if(statusOk){
+      setLoaderTitle(isUpdate ? 'Profile updated!' : 'Registration complete!', 100);
+      await wait(500);
+      document.getElementById('loader').classList.remove('show');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-graduation-cap"></i> Submit Registration';
+      showSuccess(payload.full_name, payload.usn, isUpdate);
+    } else {
+      let errMsg = 'Submission failed.';
+      try{ const j = await dbRes.json(); errMsg = j?.message || j?.hint || j?.error || errMsg; }catch(e){}
+
+      const isRLS = errMsg.toLowerCase().includes('row-level security') || errMsg.toLowerCase().includes('rls') || dbRes.status === 403;
+      const isDup = dbRes.status === 409 || errMsg.toLowerCase().includes('duplicate') || errMsg.toLowerCase().includes('unique');
+
+      document.getElementById('loader').classList.remove('show');
+
+      if(isRLS || isDup){
+        if(uploadedPhotoPath) await deleteFile(PHOTO_BUCKET, uploadedPhotoPath);
+        if(uploadedResumePath) await deleteFile(RESUME_BUCKET, uploadedResumePath);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-graduation-cap"></i> Submit Registration';
+        showAlreadyReg('usn');
+        toast('⚠️','Already Registered','This USN / Email is already registered.','warn',5000);
+      } else {
+        if(uploadedPhotoPath) await deleteFile(PHOTO_BUCKET, uploadedPhotoPath);
+        if(uploadedResumePath) await deleteFile(RESUME_BUCKET, uploadedResumePath);
+        throw new Error(errMsg);
+      }
+    }
+
+  } catch(err){
+    console.error('Submit error:', err);
+    document.getElementById('loader').classList.remove('show');
+    if(uploadedPhotoPath) await deleteFile(PHOTO_BUCKET, uploadedPhotoPath).catch(()=>{});
+    if(uploadedResumePath) await deleteFile(RESUME_BUCKET, uploadedResumePath).catch(()=>{});
+    toast('❌','Submission Failed', err.message || 'Please check your connection and try again.','error',6000);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-graduation-cap"></i> Submit Registration';
+  }
+}
+
+function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+/* ══ SUCCESS — clean & professional ══ */
+function showSuccess(name, usn, updated){
+  const first = (name || 'Student').split(' ')[0];
+
+  document.getElementById('successTitle').textContent = updated ? 'Profile Updated' : 'Registration Submitted';
+  document.getElementById('successSubtitle').textContent = updated
+    ? 'Your information has been updated successfully'
+    : 'Your profile is now live on the placement portal';
+  document.getElementById('successMsg').textContent = updated
+    ? `${first}, your registration has been updated with the latest information.`
+    : `${first}, your profile is now live. Recruiters can discover you on the Alliance University Placement Portal.`;
+
+  // Meta stats
+  const metaHTML = `
+    <div class="s-meta-item"><span class="sv">${g('cgpa') || '—'}</span><span class="sl">CGPA</span></div>
+    <div class="s-meta-item"><span class="sv">${g('batch') || '—'}</span><span class="sl">Grad Year</span></div>
+    <div class="s-meta-item"><span class="sv">${(usn || '—').substring(0,8)}</span><span class="sl">USN</span></div>`;
+  document.getElementById('successMeta').innerHTML = metaHTML;
+
+  // Subtle confetti
+  subtleConfetti();
+
+  document.getElementById('successOverlay').classList.add('show');
+}
+
+/* ══ SUBTLE CONFETTI — professional, not excessive ══ */
+function subtleConfetti(){
+  const cols = ['#007dfb','#38bdf8','#0ea5e9','#dbeafe','#bfdbfe'];
+  for(let i = 0; i < 40; i++){
+    setTimeout(()=>{
+      const d = document.createElement('div');
+      d.className = 'cf';
+      d.style.cssText = `left:${Math.random()*100}vw;background:${cols[Math.floor(Math.random()*cols.length)]};width:${4+Math.random()*6}px;height:${4+Math.random()*6}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${2+Math.random()*2}s;animation-delay:${Math.random()*.4}s;`;
+      document.body.appendChild(d);
+      setTimeout(()=>d.remove(), 5000);
+    }, i * 20);
+  }
+}
+
+function restartForm(){
+  document.getElementById('successOverlay').classList.remove('show');
+  document.querySelectorAll('.card input,.card select,.card textarea').forEach(el=>{
+    if(el.type==='checkbox') el.checked=false;
+    else if(el.type==='radio') el.checked=el.hasAttribute('checked');
+    else if(el.id==='nationality') el.value='Indian';
+    else if(el.id==='univName') el.value='Alliance University';
+    else el.value='';
+  });
+  document.getElementById('photoAv').innerHTML='<i class="fa-solid fa-camera" style="color:#9ca3af;font-size:22px;"></i>';
+  document.getElementById('photoStatus').classList.remove('show');
+  document.getElementById('resumeDone').classList.remove('show');
+  document.querySelectorAll('.pill.on').forEach(p=>p.classList.remove('on'));
+  document.getElementById('internshipsContainer').innerHTML='';
+  document.getElementById('projectsContainer').innerHTML='';
+  internshipCount=0;projectCount=0;photoFile=null;resumeFile=null;hasBacklogs=false;forceUpdateMode=false;
+  document.getElementById('backlogCountWrap').style.display='none';
+  document.querySelectorAll('.backlog-toggle span').forEach((s,i)=>{s.classList.remove('on');if(i===0)s.classList.add('on');});
+  document.querySelectorAll('.fld.invalid,.fld.valid').forEach(f=>f.classList.remove('invalid','valid'));
+  hideAlreadyReg();
+  const btn=document.getElementById('submitBtn');btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-graduation-cap"></i> Submit Registration';
+  document.getElementById('declDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('loaderProgFill').style.width='0%';
+  goTo(1);
+}
+
+/* ══ TOAST ══ */
+function toast(em, title, msg, type='default', dur=4000){
+  const host = document.getElementById('toastHost');
+  const el = document.createElement('div');
+  el.className = `toast-item ${type}`;
+  el.innerHTML = `
+    <span class="toast-em">${em}</span>
+    <div class="toast-txt"><h4>${title}</h4><p>${msg}</p></div>
+    <div class="toast-prog" style="animation-duration:${dur}ms;"></div>`;
+  host.appendChild(el);
+  setTimeout(()=>{ el.style.animation='toastOut .28s ease forwards'; setTimeout(()=>el.remove(),280); }, dur);
+}
+
+/* ══ INIT ══ */
+document.getElementById('declDate').value = new Date().toISOString().split('T')[0];
+addInternship();
+addProject();
+</script>
+</body>
+</html>

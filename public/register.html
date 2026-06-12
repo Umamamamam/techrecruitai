@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TechRecruitAI – Register</title>
+<link rel="icon" type="image/x-icon" href="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+    --blue:rgb(0,125,251);--blue-light:rgba(0, 128, 255, 0.15);
+      --blue-dark:rgb(1,106,211);
+  --text:#1f2937;--muted:#6b7280;--border:#e5e7eb;
+}
+body{
+  font-family:'Poppins',sans-serif;background:#fff;
+  display:flex;justify-content:center;align-items:center;
+  min-height:100vh;padding:16px;
+}
+.auth-container{
+  width:min(1150px,100%);height:min(92vh,780px);background:#fff;
+  border-radius:28px;overflow:hidden;display:grid;grid-template-columns:1fr 370px;
+  box-shadow:0 25px 70px rgba(0,0,0,.12);
+}
+.left-panel{
+  display:flex;justify-content:center;align-items:center;
+  padding:24px 40px;overflow:hidden;
+}
+.form-box{width:100%;max-width:460px;}
+
+.form-box h2{font-size:24px;font-weight:700;color:var(--blue-dark);text-align:center;margin-bottom:4px;}
+.subtitle{text-align:center;color:var(--muted);font-size:12px;margin-bottom:14px;}
+.input-group{margin-bottom:11px;}
+.input-group label{display:block;margin-bottom:5px;font-size:12px;font-weight:500;color:var(--text);}
+.input-group input{
+  width:100%;height:46px;border:1px solid var(--border);border-radius:12px;
+  padding:0 16px;font-size:12px;outline:none;transition:.3s;font-family:'Poppins',sans-serif;
+}
+.input-group input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,125,251,.08);}
+.register-btn{
+  width:100%;height:46px;border:none;border-radius:12px;
+  background: var(--blue-dark);
+  color:#fff;font-size:13px;font-weight:600;cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,125,251,.18);margin-top:6px;
+  font-family:'Poppins',sans-serif;transition:.3s;
+}
+.register-btn:hover{transform:translateY(-2px);}
+.register-btn:disabled{opacity:.7;cursor:not-allowed;transform:none;}
+.divider{display:flex;align-items:center;gap:12px;margin:14px 0 12px;color:#9ca3af;font-size:12px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#e5e7eb;}
+.social-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.social-btn{
+  height:46px;border:1px solid var(--border);border-radius:12px;background:#fff;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:13px;font-weight:500;cursor:pointer;transition:.3s;
+  font-family:'Poppins',sans-serif;color:var(--text);
+}
+.social-btn img{width:18px;height:18px;object-fit:contain;}
+.social-btn:hover{border-color:var(--blue-dark);color:var(--blue-dark);}
+.register-text{margin-top:14px;text-align:center;font-size:13px;color:#6b7280;}
+.register-text a{color:var(--blue-dark);font-weight:600;text-decoration:none;}
+.right-panel{
+  position:relative;background-image:url("/images/login-boy.jpg");
+  background-size:cover;background-position:center;
+  color:#fff;display:flex;flex-direction:column;justify-content:center;padding:42px 30px;
+}
+.right-panel-content{position:relative;top:50px;}
+.right-panel h1{font-size:32px;line-height:1.15;font-weight:700;margin-bottom:14px;}
+.right-panel h1 span{color:#ff5a5a;}
+.right-panel p{font-size:14px;line-height:1.8;opacity:.95;}
+.content-loading-overlay{
+  position:absolute;
+  top:0; left:0; right:0; bottom:0;
+  background:rgba(248,250,252,.82);
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+  z-index:200;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:12px;
+  border-radius:0;
+}
+.content-loading-overlay.show{display:flex;}
+.loading-spinner{
+  position:absolute;
+  top: 350px;
+  left: 50%;
+  width:36px;height:36px;
+  border:3px solid var(--border-light);
+  border-top-color:var(--blue);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+.loading-text{   position:absolute;
+  top: 400px;
+  left: 46.5%;
+  font-size:13px;color:var(--text-secondary);font-weight:500;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+
+/* ── OTP OVERLAY ── */
+.otp-overlay{
+  position:fixed;inset:0;z-index:10000;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(8px);
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.otp-overlay.active{opacity:1;pointer-events:all;}
+.otp-card{
+  background:#fff;border-radius:24px;padding:36px 32px;
+  width:min(420px,95vw);text-align:center;
+  box-shadow:0 30px 80px rgba(0,0,0,.18);
+  transform:scale(.9) translateY(20px);
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+.otp-overlay.active .otp-card{transform:scale(1) translateY(0);}
+.otp-icon{font-size:48px;margin-bottom:12px;animation:iconPop .5s cubic-bezier(.34,1.56,.64,1) .1s both;}
+@keyframes iconPop{from{transform:scale(0)rotate(-20deg);}to{transform:scale(1)rotate(0);}}
+.otp-card h3{font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.otp-card p{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
+.otp-card p span{color:var(--blue-dark);font-weight:600;}
+.otp-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:22px;}
+.otp-inputs input{
+  width:56px;height:64px;border:2px solid var(--border);border-radius:14px;
+  text-align:center;font-size:26px;font-weight:700;color:var(--text);
+  outline:none;transition:.25s;font-family:'Poppins',sans-serif;background:#fafafa;
+}
+.otp-inputs input:focus{border-color:var(--blue-dark);background:#fff;box-shadow:0 0 0 4px rgba(1,106,211,.08);}
+.otp-inputs input.filled{border-color:var(--blue-dark);background:#fff8f8;}
+.verify-btn{
+  width:100%;height:48px;border:none;border-radius:12px;
+  background: var(--blue-dark);
+  color:#fff;font-size:15px;font-weight:600;cursor:pointer;
+  box-shadow:0 8px 20px rgba(1,106,211,.18);transition:.3s;
+  font-family:'Poppins',sans-serif;margin-bottom:14px;
+}
+.verify-btn:hover{transform:translateY(-2px);}
+.verify-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.resend-row{font-size:13px;color:var(--muted);}
+.resend-row button{
+  background:none;border:none;color:var(--blue-dark);font-weight:600;
+  cursor:pointer;font-family:'Poppins',sans-serif;font-size:13px;
+}
+.resend-row button:disabled{color:var(--muted);cursor:not-allowed;}
+.otp-success{display:none;flex-direction:column;align-items:center;gap:12px;}
+.tick-circle{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue-dark),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  animation:tickPop .5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes tickPop{from{transform:scale(0);}to{transform:scale(1);}}
+.tick-circle svg{width:36px;height:36px;}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#1f2937;color:#fff;padding:12px 24px;border-radius:50px;
+  font-size:13px;font-weight:500;z-index:99999;
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;box-shadow:0 8px 30px rgba(0,0,0,.2);
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.error{background:#c10f1a;}
+.toast.success{background:#1a56db;}
+.toast.info{background:#1a56db;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:992px){
+  body{padding:0;}
+  .auth-container{width:100%;min-height:100vh;height:auto;border-radius:0;grid-template-columns:1fr;}
+  .right-panel{display:none;}
+  .left-panel{padding:32px 20px;}
+}
+@media(max-width:576px){
+  .social-buttons{grid-template-columns:1fr;}
+  .form-box h2{font-size:20px;}
+  .otp-inputs input{width:48px;height:56px;font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="content-loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loading-text">Creating your account…</div>
+  </div>
+
+<!-- OTP OVERLAY -->
+<div class="otp-overlay" id="otpOverlay">
+  <div class="otp-card">
+    <div id="otpMain">
+      <div class="otp-icon">📩</div>
+      <h3>Check your email</h3>
+      <p>We sent a 6-digit code to<br><span id="otpEmailDisplay"></span></p>
+      <div class="otp-inputs" id="otpInputsContainer">
+        <input type="text" maxlength="1" class="otp-input" inputmode="numeric" pattern="[0-9]">
+        <input type="text" maxlength="1" class="otp-input" inputmode="numeric" pattern="[0-9]">
+        <input type="text" maxlength="1" class="otp-input" inputmode="numeric" pattern="[0-9]">
+        <input type="text" maxlength="1" class="otp-input" inputmode="numeric" pattern="[0-9]">
+        <input type="text" maxlength="1" class="otp-input" inputmode="numeric" pattern="[0-9]">
+        <input type="text" maxlength="1" class="otp-input" inputmode="numeric" pattern="[0-9]">
+      </div>
+      <button class="verify-btn" id="verifyBtn" disabled>Confirm Account</button>
+      <div class="resend-row">
+        Didn't get it? <button id="resendBtn" disabled>Resend (<span id="resendTimer">30</span>s)</button>
+      </div>
+    </div>
+    <div class="otp-success" id="otpSuccess">
+      <div class="tick-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h3 style="color:#1a56db">Account Created!</h3>
+      <p style="color:#6b7280;font-size:13px;">Taking you to your dashboard…</p>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<div class="auth-container">
+  <div class="left-panel">
+    <div class="form-box">
+      
+      <h2>Create Account</h2>
+      <p class="subtitle">Join TechRecruitAI</p>
+      <form id="registerForm">
+        <div class="input-group">
+          <label>Full Name</label>
+          <input type="text" id="fullName" placeholder="Enter your full name" required>
+        </div>
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email address" required>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Create a password" required>
+        </div>
+        <div class="input-group">
+          <label>Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+        </div>
+        <button type="submit" class="register-btn" id="registerBtn">Create Account</button>
+      </form>
+      <div class="divider">or continue with</div>
+      <div class="social-buttons">
+        <button class="social-btn" id="googleBtn" type="button">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google">
+          <span>Google</span>
+        </button>
+        <button class="social-btn" id="microsoftBtn" type="button">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">
+          <span>Microsoft</span>
+        </button>
+      </div>
+      <div class="register-text">Already have an account? <a href="login.html">Login Now</a></div>
+    </div>
+  </div>
+  <div class="right-panel">
+    <div class="right-panel-content">
+      <h1>Start Your<br><span> Journey</span><br>with TechRecruitAI</h1>
+      <p>Innovation.<br>Excellence.<br>Success.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────
+   SUPABASE INIT
+───────────────────────────────────────────── */
+const SUPABASE_URL      = "https://zaqfpoobhvvyndtazyxw.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphcWZwb29iaHZ2eW5kdGF6eXh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzUwMzUsImV4cCI6MjA5MzkxMTAzNX0.nfGqIZpcp_Vl3t0rJX84qB4QhiIyhC-q9GfAcboV2hI";
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ─────────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────────── */
+const loaderEl  = document.getElementById('loading-overlay');
+const loaderTxt = document.getElementById('loading-text');
+
+function showLoader(msg = 'Working…') {
+  loaderTxt.textContent = msg;
+  loaderEl.classList.add('active');
+}
+function hideLoader() {
+  loaderEl.classList.remove('active');
+}
+
+let toastTimer;
+const toastEl = document.getElementById('toast');
+function showToast(msg, type = '') {
+  clearTimeout(toastTimer);
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show ' + type;
+  toastTimer = setTimeout(() => { toastEl.className = 'toast'; }, 3800);
+}
+
+/* ─────────────────────────────────────────────
+   OTP LOGIC  (6-digit Supabase OTP)
+───────────────────────────────────────────── */
+const otpOverlay  = document.getElementById('otpOverlay');
+const otpInputs   = document.querySelectorAll('.otp-input');
+const verifyBtn   = document.getElementById('verifyBtn');
+const resendBtn   = document.getElementById('resendBtn');
+const resendSpan  = document.getElementById('resendTimer');
+let resendInterval, resendSecs = 30, pendingEmail = '', pendingFullName = '';
+
+// Wire up OTP box inputs
+otpInputs.forEach((inp, i) => {
+  inp.addEventListener('input', e => {
+    inp.value = inp.value.replace(/\D/, '');
+    inp.classList.toggle('filled', inp.value !== '');
+    if (inp.value && i < otpInputs.length - 1) otpInputs[i + 1].focus();
+    verifyBtn.disabled = [...otpInputs].some(x => !x.value);
+  });
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !inp.value && i > 0) otpInputs[i - 1].focus();
+  });
+  inp.addEventListener('paste', e => {
+    const txt = (e.clipboardData || window.clipboardData)
+                  .getData('text').replace(/\D/g, '').slice(0, 6);
+    if (txt.length === 6) {
+      e.preventDefault();
+      otpInputs.forEach((x, idx) => {
+        x.value = txt[idx] || '';
+        x.classList.toggle('filled', !!x.value);
+      });
+      verifyBtn.disabled = false;
+      otpInputs[5].focus();
+    }
+  });
+});
+
+function startResendTimer() {
+  resendSecs = 30;
+  resendBtn.disabled = true;
+  resendSpan.textContent = resendSecs;
+  clearInterval(resendInterval);
+  resendInterval = setInterval(() => {
+    resendSecs--;
+    resendSpan.textContent = resendSecs;
+    if (resendSecs <= 0) {
+      clearInterval(resendInterval);
+      resendBtn.disabled = false;
+      resendBtn.innerHTML = 'Resend code';
+    }
+  }, 1000);
+}
+
+function openOtp(email, fullName) {
+  pendingEmail    = email;
+  pendingFullName = fullName;
+  document.getElementById('otpEmailDisplay').textContent = email;
+  otpInputs.forEach(x => { x.value = ''; x.classList.remove('filled'); });
+  verifyBtn.disabled = true;
+  document.getElementById('otpMain').style.display    = 'block';
+  document.getElementById('otpSuccess').style.display = 'none';
+  otpOverlay.classList.add('active');
+  startResendTimer();
+  setTimeout(() => otpInputs[0].focus(), 350);
+}
+
+// Resend OTP
+resendBtn.addEventListener('click', async () => {
+  resendBtn.disabled = true;
+  showLoader('Resending code…');
+  const { error } = await sb.auth.resend({ type: 'signup', email: pendingEmail });
+  hideLoader();
+  if (error) {
+    showToast('Could not resend: ' + error.message, 'error');
+    resendBtn.disabled = false;
+  } else {
+    showToast('New code sent! Check your inbox.', 'success');
+    startResendTimer();
+  }
+});
+
+// ✅ FIX: type changed from 'email' to 'signup'
+verifyBtn.addEventListener('click', async () => {
+  const code = [...otpInputs].map(x => x.value).join('');
+  if (code.length !== 6) return;
+  verifyBtn.disabled = true;
+  showLoader('Verifying code…');
+
+  const { data, error } = await sb.auth.verifyOtp({
+    email: pendingEmail,
+    token: code,
+    type: 'signup'   // ✅ FIXED: was 'email', must be 'signup' for registration OTP
+  });
+
+  if (error) {
+    hideLoader();
+    showToast('Wrong or expired code. Try again.', 'error');
+    verifyBtn.disabled = false;
+    return;
+  }
+
+  // Upsert profile row
+  if (data?.user) {
+    await sb.from('profiles').upsert({
+      id:         data.user.id,
+      email:      data.user.email,
+      full_name:  pendingFullName || data.user.user_metadata?.full_name || '',
+      avatar_url: data.user.user_metadata?.avatar_url || null,
+      provider:   'email',
+      updated_at: new Date().toISOString()
+    });
+  }
+
+  hideLoader();
+  document.getElementById('otpMain').style.display    = 'none';
+  const suc = document.getElementById('otpSuccess');
+  suc.style.display = 'flex';
+  showToast('Account created successfully!', 'success');
+  setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+});
+
+/* ─────────────────────────────────────────────
+   REGISTER FORM SUBMIT
+───────────────────────────────────────────── */
+document.getElementById('registerForm').addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const fullName = document.getElementById('fullName').value.trim();
+  const email    = document.getElementById('email').value.trim().toLowerCase();
+  const password = document.getElementById('password').value;
+  const confirm  = document.getElementById('confirmPassword').value;
+
+  if (!fullName)              { showToast('Please enter your full name.', 'error'); return; }
+  if (password !== confirm)   { showToast('Passwords do not match.', 'error'); return; }
+  if (password.length < 6)    { showToast('Password must be at least 6 characters.', 'error'); return; }
+
+  const btn = document.getElementById('registerBtn');
+  btn.disabled = true;
+  showLoader('Creating your account…');
+
+  let data, error;
+  try {
+    ({ data, error } = await sb.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: fullName }
+        // No emailRedirectTo = OTP mode, not magic link
+      }
+    }));
+  } catch (err) {
+    hideLoader();
+    btn.disabled = false;
+    showToast('Network error. Please try again.', 'error');
+    return;
+  }
+
+  hideLoader();
+  btn.disabled = false;
+
+  if (error) {
+    // Handle common errors with friendly messages
+    if (error.status === 500) {
+      showToast('Server error. Please try again in a moment.', 'error');
+    } else if (error.message?.toLowerCase().includes('rate')) {
+      showToast('Too many attempts. Please wait a minute.', 'error');
+    } else {
+      showToast(error.message, 'error');
+    }
+    return;
+  }
+
+  // Empty identities = email already registered
+  if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+    showToast('This email is already registered. Please login instead.', 'error');
+    return;
+  }
+
+  // Success — OTP sent
+  showToast('Code sent! Check your inbox.', 'success');
+  openOtp(email, fullName);
+});
+
+/* ─────────────────────────────────────────────
+   GOOGLE OAUTH
+───────────────────────────────────────────── */
+document.getElementById('googleBtn').addEventListener('click', async () => {
+  showLoader('Opening Google…');
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin + '/index.html',
+      queryParams: { access_type: 'offline', prompt: 'consent select_account' }
+    }
+  });
+  if (error) { hideLoader(); showToast(error.message, 'error'); }
+});
+
+/* ─────────────────────────────────────────────
+   MICROSOFT OAUTH
+───────────────────────────────────────────── */
+document.getElementById('microsoftBtn').addEventListener('click', async () => {
+  showLoader('Opening Microsoft…');
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'azure',
+    options: {
+      redirectTo: window.location.origin + '/index.html',
+      scopes: 'email profile'
+    }
+  });
+  if (error) { hideLoader(); showToast(error.message, 'error'); }
+});
+
+/* ─────────────────────────────────────────────
+   OAUTH REDIRECT HANDLER
+───────────────────────────────────────────── */
+sb.auth.onAuthStateChange(async (event, session) => {
+  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
+    const user     = session.user;
+    const provider = user.app_metadata?.provider;
+    if (provider && provider !== 'email') {
+      await sb.from('profiles').upsert({
+        id:         user.id,
+        email:      user.email,
+        full_name:  user.user_metadata?.full_name || user.user_metadata?.name || '',
+        avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+        provider:   provider,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
+    }
+  }
+});
+</script>
+</body>
+</html>
